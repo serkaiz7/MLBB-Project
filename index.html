@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Prompt Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: radial-gradient(circle, #1a202c 0%, #0c0f14 100%);
+            overflow-x: hidden;
+            position: relative;
+        }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .glass-card {
+            background: rgba(23, 25, 35, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px #0ea5e9, 0 0 15px #0ea5e9, 0 0 25px #0ea5e9;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 10px #0ea5e9, 0 0 25px #0ea5e9, 0 0 50px #0ea5e9;
+            transform: translateY(-2px);
+        }
+        select {
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%230ea5e9" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position-x: 98%;
+            background-position-y: 50%;
+        }
+        .bg-shapes div { position: absolute; list-style: none; display: block; width: 20px; height: 20px; background: rgba(14, 165, 233, 0.2); bottom: -150px; animation: rise 25s infinite linear; border-radius: 4px; }
+        .bg-shapes div:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .bg-shapes div:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .bg-shapes div:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        .bg-shapes div:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .bg-shapes div:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        .bg-shapes div:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+        .bg-shapes div:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+        .bg-shapes div:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+        .bg-shapes div:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+        .bg-shapes div:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+        @keyframes rise { 0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 4px; } 100% { transform: translateY(-120vh) rotate(720deg); opacity: 0; border-radius: 50%; } }
+        
+        .toggle-switch { display: inline-flex; flex-wrap: wrap; justify-content: center; background-color: #1e293b; border-radius: 9999px; border: 1px solid rgba(14, 165, 233, 0.3); padding: 4px; }
+        .toggle-switch input { display: none; }
+        .toggle-switch label { cursor: pointer; padding: 0.5rem 1rem; border-radius: 9999px; transition: all 0.3s ease; color: #94a3b8; font-weight: 600; white-space: nowrap; }
+        .toggle-switch input:checked + label { background-color: #0ea5e9; color: #0c0f14; box-shadow: 0 0 10px #0ea5e9; }
+    </style>
+</head>
+<body class="text-slate-200">
+
+    <div class="bg-shapes"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-3xl mx-auto glass-card rounded-2xl shadow-2xl p-6 md:p-10 z-10">
+            
+            <header class="text-center mb-8">
+                <h1 class="font-orbitron text-3xl md:text-4xl font-bold text-sky-400 tracking-wider">Universal Prompt Generator</h1>
+                <p class="text-slate-400 mt-2">Create unique prompts for characters, scenes, and designs.</p>
+            </header>
+
+            <div class="space-y-6 mb-8">
+                 <!-- Toggles Section Removed -->
+                
+                <div id="ml-heroes-inputs" class="space-y-4">
+                    <div>
+                        <label for="ml-hero-select" class="font-orbitron text-sky-400 text-sm mb-2 block">SELECT HERO</label>
+                        <select id="ml-hero-select" class="w-full bg-slate-900/80 border border-sky-700/50 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-sky-500 text-lg"></select>
+                    </div>
+                </div>
+
+                <div id="ml-product-design-inputs" class="space-y-4">
+                    <div class="flex flex-col items-center">
+                         <label class="font-orbitron text-sky-400 text-sm mb-2 block">SELECT PRODUCT TYPE</label>
+                         <div class="toggle-switch">
+                            <input type="radio" id="product-type-sticker" name="product-type" value="sticker" checked>
+                            <label for="product-type-sticker">Sticker</label>
+                            <input type="radio" id="product-type-tshirt" name="product-type" value="tshirt">
+                            <label for="product-type-tshirt">T-Shirt</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="ml-design-template-select" class="font-orbitron text-sky-400 text-sm mb-2 block">SELECT DESIGN TEMPLATE</label>
+                        <select id="ml-design-template-select" class="w-full bg-slate-900/80 border border-sky-700/50 rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-sky-500 text-lg"></select>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-center gap-4 pt-4">
+                    <button id="generate-btn" class="w-auto font-orbitron bg-sky-500 text-slate-900 font-bold py-3 px-8 rounded-lg neon-button text-lg" title="Generate New Prompt">
+                        GENERATE
+                    </button>
+                    <button id="shuffle-btn" title="Random Hero & Design" class="w-auto font-orbitron bg-teal-500 text-slate-900 font-bold py-3 px-4 rounded-lg transition-all duration-300 ease-in-out hover:bg-teal-400 hover:shadow-lg hover:shadow-teal-500/50 transform hover:-translate-y-0.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <label for="prompt-output" class="font-orbitron text-sky-400 text-sm mb-2 block">GENERATED PROMPT</label>
+                <div class="relative">
+                    <p id="prompt-output" class="w-full bg-slate-900/80 border border-sky-700/50 rounded-lg p-4 text-slate-300 min-h-[100px] text-lg select-text" style="white-space: pre-wrap;"></p>
+                    <button id="copy-btn" class="absolute top-2 right-2 bg-slate-700/50 hover:bg-sky-600 text-sky-300 hover:text-white font-semibold py-1 px-3 rounded-md transition-colors duration-300 text-sm">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA LISTS ---
+        const prompts = {
+            mobileLegendsHeroes: {
+                "Aamon": `**Artwork Prompt: Aamon, the Duke of Shards**
+This prompt is for creating a high-quality, elegant illustration of Aamon.
+
+(1) Physical Appearance: A handsome, noble-looking man with sharp, aristocratic features, similar to his brother Gusion. He has silver-white hair and piercing, intelligent eyes, often with a subtle glow.
+(2) Attire: Wears a sophisticated and formal ducal outfit, likely in shades of dark purple, black, and silver. His clothing is adorned with shard-like patterns and the Paxley family crest. He may have a high-collared cape or coat.
+(3) Weapon: Does not wield a traditional weapon. His power comes from magical, glass-like shards that he controls telekinetically. These shards should be depicted floating around him, sharp and shimmering with arcane energy.
+(4) Aura/Effects: His abilities are represented by a flurry of invisible and visible attacks. When he enters his camouflaged state, he should have a semi-translucent, shimmering effect. His ultimate summons a rain of sharp, glowing shards. His magical energy is a deep, arcane violet.
+(5) Unique Traits: Embodies a 'noble assassin' or 'mage assassin' archetype. His movements are graceful and calculated. The key visual is his control over the deadly, elegant glass shards.`,
+                "Akai": `**Artwork Prompt: Akai, the Panda Warrior**
+This prompt is for creating a high-quality, charming illustration of Akai.
+
+(1) Physical Appearance: A large, round, and lovable panda with a determined but friendly expression. He is chubby but surprisingly agile.
+(2) Attire: Wears traditional, Asian-inspired martial arts attire, such as a bamboo hat, robes, and prayer beads around his neck or wrist. His outfit is often in shades of green and brown.
+(3) Weapon: He wields a heavy bamboo staff or a fishing rod in some skins. He also uses a large, sturdy gourd (often used for carrying water or wine) as a weapon or shield.
+(4) Aura/Effects: His abilities have a natural, cartoony feel. His ultimate, 'Hurricane Dance', should be a whirlwind of motion, with Akai spinning rapidly, creating a powerful gust of wind filled with leaves and dust. He is often accompanied by a small, comedic frog.
+(5) Unique Traits: The 'drunken master' and 'lovable oaf' archetypes combined in a panda. His poses can be either clumsy and relaxed or surprisingly dynamic and powerful during combat.`,
+                "Aldous": `**Artwork Prompt: Aldous, the Soul Contractor**
+This prompt is for creating a high-quality, imposing illustration of Aldous.
+
+(1) Physical Appearance: A tall, muscular, and stoic man with a somber expression. His right arm is significantly larger, encased in a massive, stone-like pauldron that glows with collected soul energy.
+(2) Attire: Wears the rugged armor of a guardian or contractor, often in earthy tones of brown and grey. His left arm is typically bare or lightly armored, emphasizing the contrast with his massive right arm.
+(3) Weapon: He fights with his fists, but his true weapon is his empowered right arm, which he uses to deliver a single, devastating punch.
+(4) Aura/Effects: As he collects souls, his right arm should glow more intensely with a purple or dark energy. His ultimate ability allows him to see all enemies and fly towards a target like a meteor, which should be a powerful, ground-shattering visual on impact.
+(5) Unique Traits: The 'one-punch man' archetype. His entire theme revolves around building up power for a single, apocalyptic strike. The illustration should convey a sense of immense, stored power and inevitable doom.`,
+                "Alice": `**Artwork Prompt: Alice, the Blood Queen**
+This prompt is for creating a high-quality, alluring illustration of Alice.
+
+(1) Physical Appearance: An eternally youthful and beautiful woman with a vampiric, demonic appearance. She has pale skin, sharp features, long flowing dark hair (often black or deep red), and glowing red eyes. A pair of demonic horns protrudes from her head, and she has elegant, bat-like wings.
+(2) Attire: Wears a regal and seductive gown, typically in shades of crimson, black, and purple. The dress is elegant but also dark and menacing, fitting for a queen of blood.
+(3) Weapon: She does not wield a physical weapon. Her weapon is her blood magic.
+(4) Aura/Effects: Her magic is a swirling vortex of blood-red and dark purple energy. Her 'Blood Orb' is a sphere of pure, glowing blood energy. Her ultimate ability, 'Blood Ode', creates a large, draining field of swirling blood around her.
+(5) Unique Traits: The classic 'vampire queen' or 'succubus' archetype. She should be depicted as both beautiful and terrifying. Her poses are always elegant and commanding, often floating off the ground with her wings spread.`,
+                "Alpha": `**Artwork Prompt: Alpha, the Ultimate Weapon**
+This prompt is for creating a high-quality, futuristic illustration of Alpha.
+
+(1) Physical Appearance: A humanoid cyborg with a mostly mechanical body, but retaining some human-like features. His face is often partially obscured by a helmet or visor, and his eyes glow with a blue or yellow light.
+(2) Attire: His body is his attire—a suit of advanced, sleek armor plating, typically in shades of grey, blue, and silver. His design includes jet boosters and sharp, blade-like fins.
+(3) Weapon: His primary weapon is a massive, high-tech spear or halberd that pulses with energy. He is always accompanied by his drone companion, Beta, a small, spherical robot that assists him in combat.
+(4) Aura/Effects: His abilities are marked by powerful, wide-arcing energy slashes from his spear and laser blasts from Beta. The energy color is typically a bright cyan or light blue. His movements should have a powerful, jet-propelled feel.
+(5) Unique Traits: A 'sci-fi cyborg' or 'mecha knight' archetype. The key relationship is between Alpha and Beta; they should always be depicted fighting in tandem.`,
+                "Alucard": `**Artwork Prompt: Alucard, the Demon Hunter**
+This prompt is for creating a high-quality, dynamic illustration of Alucard.
+
+(1) Physical Appearance: A determined young man with a lean, athletic build, striking blonde hair, and intense blue eyes.
+(2) Attire: Wears a long, dark blue or black trench coat adorned with gold trim and demonic sigils. Beneath the coat is a practical combat outfit, often featuring a single pauldron on one shoulder.
+(3) Weapon: A massive, ornate greatsword that is nearly as tall as he is. The sword has a demonic eye or gem embedded in its hilt and glows with an ominous energy.
+(4) Aura/Effects: His abilities manifest as dark, shadow-like energy slashes and powerful golden or blue shockwaves. His ultimate ability creates a powerful surge of dark energy around him.
+(5) Unique Traits: A classic 'demon hunter' archetype. His pose should be dynamic, often in mid-swing with his sword, conveying immense power and agility. The lighting should highlight the glow of his sword.`,
+                "Angela": `**Artwork Prompt: Angela, the Bunnylove**
+This prompt is for creating a high-quality, adorable illustration of Angela.
+
+(1) Physical Appearance: A small, cheerful android or puppet with a childlike appearance and large, expressive eyes. She is designed to be incredibly cute.
+(2) Attire: Wears a cute, frilly dress, often with bunny or puppet-like motifs. Her design is whimsical and doll-like.
+(3) Weapon: She uses magical strings to attack and heal, which emanate from her hands. She does not carry a physical weapon.
+(4) Aura/Effects: Her magic is bright, colorful, and full of heart and sparkle effects, typically in shades of pink, blue, and yellow. Her ultimate ability allows her to attach herself to an ally, creating a powerful, glowing shield around them. This should be visualized as her physically merging with her teammate in a burst of joyful light.
+(5) Unique Traits: The 'living puppet' or 'symbiotic support' archetype. She is the epitome of 'kawaii' (cute). The illustration should highlight her cheerful, helpful nature and the magical, string-based nature of her abilities.`,
+                "Argus": `**Artwork Prompt: Argus, the Fallen Angel**
+This prompt is for creating a high-quality, tragic illustration of Argus.
+
+(1) Physical Appearance: A formerly beautiful angel, now corrupted. He has a powerful build, but his features are twisted with rage and sorrow. He has one remaining angelic wing and one demonic, tattered wing, symbolizing his fall from grace. His hair is often a dark or fiery color.
+(2) Attire: Wears dark, corrupted angelic armor, often in shades of black, deep green, and bronze. The armor is jagged and broken in places.
+(3) Weapon: Wields a large, demonic blade known as the 'Demonic Blade'. The sword is often wreathed in green, corrupting flames or dark energy.
+(4) Aura/Effects: His power is a mix of dark and corrupt holy energy, often visualized as a sickly green or black flame. During his ultimate, 'Eternal Evil', he becomes temporarily invulnerable and transforms into a more demonic form, glowing with immense power.
+(5) Unique Traits: The 'fallen angel' archetype. His design should evoke a sense of tragedy and immense, corrupt power. His expression is one of eternal anger and pain.`,
+                "Arlott": `**Artwork Prompt: Arlott, the Lone Marksman**
+This prompt is for creating a high-quality, somber illustration of Arlott.
+
+(1) Physical Appearance: A character with a dual human and demonic nature. He has a serious, perhaps sorrowful, expression. One of his arms is demonic, and his eyes may have a unique, supernatural look.
+(2) Attire: His clothing is a mix of practical warrior's gear and elements that hint at his demonic side. Often seen in darker colors, with armored pieces on his human side.
+(3) Weapon: Wields a pair of lances or a dual-ended spear. The weapons are extensions of his will and are used for swift, decisive strikes.
+(4) Aura/Effects: His abilities leave trails of dark, shadowy, or crimson energy. His attacks have a 'marking' effect, which should be visualized as a glowing demonic sigil on his targets.
+(5) Unique Traits: Embodies the 'cursed warrior' archetype. His fighting style is aggressive and relentless. The contrast between his human and demonic aspects is a key visual theme.`,
+                "Atlas": `**Artwork Prompt: Atlas, the Ocean Gladiator**
+This prompt is for creating a high-quality, imposing illustration of Atlas.
+
+(1) Physical Appearance: A massive, ancient mecha-like creature powered by an abyssal being. The outer shell is a bulky, metal diving suit, but its inhabitant is a small, octopus-like creature visible in the helmet. The machine itself is imposing and powerful.
+(2) Attire: The 'attire' is the ancient, heavy, iron-and-bronze mech suit. It's covered in barnacles and shows signs of being submerged for ages. Large, heavy chains hang from it.
+(3) Weapon: He uses the massive chains attached to his mech suit as his primary weapons, swinging them with incredible force.
+(4) Aura/Effects: His abilities are based on abyssal and oceanic power. His ultimate, 'Fatal Links', should show the chains lashing out, hooking onto enemies, and dragging them together with immense force, creating a watery vortex.
+(5) Unique Traits: A 'mecha golem' from the deep sea. The key visual is the massive, intimidating mech suit contrasted with the small, vulnerable pilot inside. His movements are slow but devastatingly powerful.`,
+                "Aurora": `**Artwork Prompt: Aurora, the Queen of the North**
+This prompt is for creating a high-quality, regal illustration of Aurora.
+
+(1) Physical Appearance: An elegant and beautiful queen with a serene but powerful presence. She has fair skin, and her hair is often depicted as being made of ice or is a very pale blonde/white.
+(2) Attire: Wears a magnificent and regal gown fit for an ice queen, adorned with frost, snowflakes, and crystals. Her attire is primarily in shades of icy blue, white, and silver. She often wears a crown of ice.
+(3) Weapon: She wields no physical weapon, commanding the power of frost and ice with her hands, often using a magical scepter or wand of ice.
+(4) Aura/Effects: Her magic is pure cryomancy. She summons blasts of frost, creates walls of ice, and calls down frozen meteors. Her abilities should be visualized with sharp, crystalline ice effects and swirling snow.
+(5) Unique Traits: The quintessential 'ice queen' or 'cryomancer' archetype. Her poses are always graceful and commanding, exuding an aura of cold, untouchable power.`,
+                "Aulus": `**Artwork Prompt: Aulus, the Warrior of Ferocity**
+This prompt is for creating a high-quality, powerful illustration of Aulus.
+
+(1) Physical Appearance: A Leonin (lion-like race) character, but much smaller and younger-looking than others. He is a dwarf-like figure with a stocky, powerful build, lion ears, and a mane-like hairstyle. His expression is one of fierce determination.
+(2) Attire: He wears the gear of a blacksmith or warrior, including a heavy apron, gauntlets, and sturdy boots. The attire is functional and shows signs of wear from battle and the forge.
+(3) Weapon: He wields a massive battle axe that is comically oversized for his body. The axe head glows with fire and heat as he builds up his rage.
+(4) Aura/Effects: His power comes from the fire of the forge. As he fights, his axe and body should begin to glow with an intense, fiery orange aura. His ultimate ability creates a line of erupting flames on the ground.
+(5) Unique Traits: A 'berserker dwarf' archetype. The contrast between his small size and the huge, powerful axe is a key visual element. His fighting style is furious and unrelenting.`,
+                "Badang": `**Artwork Prompt: Badang, the Tribal Warrior**
+This prompt is for creating a high-quality, mighty illustration of Badang.
+
+(1) Physical Appearance: A tall, incredibly muscular man with a powerful physique. He has a determined and heroic expression, with tribal tattoos or markings on his body.
+(2) Attire: Wears traditional attire of a southern tribe, consisting of simple cloth wraps, decorative beads, and arm guards. His clothing allows for maximum freedom of movement.
+(3) Weapon: He wields no weapons; his fists are his weapons. His arms are encased in massive, powerful stone or metal gauntlets that crackle with energy.
+(4) Aura/Effects: His power manifests as raw, physical force and earth-shattering shockwaves. His punches should create visible air distortions or ground cracks. His ultimate, 'Fist Crack', is a rapid barrage of powerful punches that create a stunning visual of force and impact.
+(5) Unique Traits: The 'mighty brawler' archetype. His design is inspired by Southeast Asian folklore. His poses should emphasize his immense physical strength and powerful fists.`,
+                "Balmond": `**Artwork Prompt: Balmond, the Bloody Beast**
+This prompt is for creating a high-quality, brutal illustration of Balmond.
+
+(1) Physical Appearance: A massive, brutish orc or beast-man with a hulking, muscular build. He has green or grey skin, prominent tusks, and a savage, bloodthirsty expression.
+(2) Attire: Wears minimal but heavy-duty armor, such as a large shoulder pauldron, studded leather straps, and armored boots. His look is that of a savage warrior or barbarian.
+(3) Weapon: He wields a colossal, blood-stained battle-axe. The axe is crude but brutally effective.
+(4) Aura/Effects: His powers are raw and violent. His spinning 'Cyclone Sweep' should be a whirlwind of steel and fury. His ultimate, 'Lethal Counter', is a devastating downward smash with his axe that should crack the very ground and create a shockwave of dark energy.
+(5) Unique Traits: The classic 'orc berserker' archetype. He embodies pure, unrestrained savagery and bloodlust. His poses are always aggressive and intimidating.`,
+                "Bane": `**Artwork Prompt: Bane, the Frozen King**
+This prompt is for creating a high-quality, formidable illustration of Bane.
+
+(1) Physical Appearance: A cursed, undead pirate lord who is part octopus, part man. His face is humanoid but features tentacles for a beard. One of his arms is a massive crab-like pincer. He has a commanding and grizzled look.
+(2) Attire: Wears the regal but tattered attire of a pirate captain, including a large captain's hat, an ornate coat, and an eyepatch. His clothes are soaked and worn from the sea.
+(3) Weapon: He carries a rustic, naval cutlass and an old-fashioned pistol. His primary weapon, however, is his massive crab claw.
+(4) Aura/Effects: His abilities are a mix of alcoholic poison and deep-sea magic. He can spit venomous ink or alcohol. His ultimate ability summons a school of spectral sharks or a kraken that moves forward, creating a wave of watery destruction.
+(5) Unique Traits: The 'undead pirate lord' meets 'Cthulhu'. He is both comedic and menacing. The combination of classic pirate elements with grotesque sea monster features is his key visual.`,
+                "Barats": `**Artwork Prompt: Barats & Detona**
+This prompt is for creating a high-quality, dynamic illustration of Barats and his companion, Detona.
+
+(1) Physical Appearance: Barats is a small, goblin-like Leonin with a mischievous and determined expression. He is riding on the back of Detona, a massive, dinosaur-like creature that looks like a cross between a T-Rex and a dragon.
+(2) Attire: Barats wears tribal gear suitable for a rider, with simple leathers and straps. Detona is a creature and wears no attire, but may have some harnesses or a saddle for Barats.
+(3) Weapon: Barats wields a staff or a horn to direct Detona. Detona's weapons are its massive jaws, powerful stomps, and its ability to spit out fiery or sticky projectiles.
+(4) Aura/Effects: As they fight, Detona grows larger and more powerful, which should be visually represented. Detona's attacks are earthy and powerful. Their ultimate involves Detona swallowing an enemy and spitting them out, which should have a dramatic, cartoonish visual effect.
+(5) Unique Traits: The 'beast rider' archetype. The dynamic and relationship between the small, clever Barats and the huge, powerful Detona is the central theme. Poses should show them working in perfect synergy.`,
+                "Beatrix": `**Artwork Prompt: Beatrix, the Dawnbreak Soldier**
+This prompt is for creating a high-quality, versatile illustration of Beatrix.
+
+(1) Physical Appearance: A young, confident woman with a sharp, determined look. She often has heterochromia (two different colored eyes) and stylish, modern hair, perhaps with a sidecut.
+(2) Attire: Wears a futuristic, tactical military outfit, combining style with functionality. Her outfit might have elements of a modern pop star mixed with a high-tech soldier.
+(3) Weapon: Her uniqueness comes from her four distinct, high-tech weapons stored in a case on her back: Renner (a sniper rifle), Bennett (a rocket launcher), Wesker (a shotgun), and Nibiru (a submachine gun). The prompt should ideally show her switching between these weapons or feature one prominently.
+(4) Aura/Effects: Her abilities are all based on high-tech ballistics. Sniper shots leave a clean energy trail, rockets create a large explosion, shotgun blasts are wide and impactful, and SMG fire is a hail of bullets. The effects are clean, modern, and powerful.
+(5) Unique Traits: The 'one-woman army' or 'master of arms' archetype. Her confidence and versatility are key. The illustration should showcase her tactical prowess and the futuristic design of her arsenal.`,
+                "Belerick": `**Artwork Prompt: Belerick, the Guardian of Nature**
+This prompt is for creating a high-quality, majestic illustration of Belerick.
+
+(1) Physical Appearance: A massive, ancient treant or nature golem. His body is made of wood, vines, and moss, with a gentle, wise face formed in the bark. A glowing life seed or core is often visible in his chest.
+(2) Attire: He is a creature of nature and wears no clothes, but his body is adorned with flowers, glowing mushrooms, and symbiotic plants.
+(3) Weapon: His weapons are nature itself. He attacks with thorny vines that sprout from his body and the ground.
+(4) Aura/Effects: His magic is pure life and nature energy, visualized as a vibrant green and golden glow. His ultimate creates an expanding area of thorny vines that taunt and damage enemies. He should constantly be shedding leaves or pollen.
+(5) Unique Traits: The 'gentle giant' and 'living forest' archetype. Despite his intimidating size, he has a protective and life-giving aura. The illustration should emphasize his connection to all living things.`,
+                "Benedetta": `**Artwork Prompt: Benedetta, the Shadow Ranger**
+This prompt is for creating a high-quality, swift illustration of Benedetta.
+
+(1) Physical Appearance: A strong, determined woman with sharp eyes and a focused expression. She has long, flowing hair, often with a streak of a different color, and a scar that shows her experience as a warrior.
+(2) Attire: Wears the outfit of a ranger or demon hunter, blending practical leather armor with a flowing cloak or sash. Her clothes are designed for agility and speed.
+(3) Weapon: Wields a beautiful and deadly longsword, named Alecto. The blade is often depicted glowing with a faint light.
+(4) Aura/Effects: Her abilities are characterized by incredible speed and precision. She leaves behind a shadow duplicate of herself when she dashes. Her sword strikes are infused with a mix of light and shadow energy, creating swift, clean slash effects.
+(5) Unique Traits: A 'master swordswoman' with supernatural speed. The key visual is her fluid, dance-like combat style and the use of her shadow phantom. The illustration should capture her in a dynamic, mid-dash pose.`,
+                "Brody": `**Artwork Prompt: Brody, the Lone Star**
+This prompt is for creating a high-quality, impactful illustration of Brody.
+
+(1) Physical Appearance: A man whose body has been corrupted and infused with abyssal energy. One of his arms is a grotesque, oversized mechanical or monstrous limb. His expression is grim and determined.
+(2) Attire: Wears rugged, tattered clothing, like a wanderer or survivor. The clothes are torn and worn, especially around his mutated arm.
+(3) Weapon: He doesn't wield a weapon in his hands. His mutated right arm is his weapon, which he uses to project powerful energy blasts.
+(4) Aura/Effects: His attacks are slow but incredibly powerful. His energy blasts should feel heavy and impactful, creating small explosions on contact. His ultimate ability locks onto targets and fires homing energy blasts that grow in power. The energy is a dark, abyssal blue or purple.
+(5) Unique Traits: The 'cursed marksman' archetype. His movements are slow and deliberate, a stark contrast to other agile marksmen. The visual focus is the heavy, powerful, and unnatural energy emanating from his corrupted arm.`,
+                "Bruno": `**Artwork Prompt: Bruno, the Protector**
+This prompt is for creating a high-quality, energetic illustration of Bruno.
+
+(1) Physical Appearance: A charismatic and athletic man with a confident smile. He has cybernetically enhanced legs that allow him to move with incredible speed and agility.
+(2) Attire: Wears a soccer player's uniform, complete with a jersey, shorts, and cleats. The uniform is often futuristic and stylish.
+(3) Weapon: His weapon is a high-tech, energy-infused soccer ball. The ball glows and leaves a colored trail when kicked.
+(4) Aura/Effects: All of his abilities are soccer-themed. He kicks the energy ball with immense force, creating powerful projectiles. His ultimate involves kicking a super-charged ball that ricochets between enemies. The effects should be bright, energetic, and have a sci-fi feel.
+(5) Unique Traits: A 'cyborg soccer star'. His theme is unique and playful. The illustration should capture his incredible agility, fancy footwork, and the futuristic power of his energy ball.`,
+                "Carmilla": `**Artwork Prompt: Carmilla, the Shadow of Twilight**
+This prompt is for creating a high-quality, romantic and gothic illustration of Carmilla.
+
+(1) Physical Appearance: A beautiful and elegant vampire with a melancholic and romantic expression. She has pale skin, sharp features, and long, flowing blood-red or dark hair.
+(2) Attire: Wears a stunning, gothic-style ball gown, typically in shades of crimson and black. The dress is elegant and flowing, suitable for a vampire noblewoman.
+(3) Weapon: She does not wield a weapon. Her power comes from blood magic and her connection to her lover, Cecilion.
+(4) Aura/Effects: Her magic manifests as swirling crimson energy and spectral bats. Her ultimate ability creates a curse that links enemies together, which should be visualized as ethereal, crimson chains connecting them. When near Cecilion, there should be a visible, romantic aura connecting them.
+(5) Unique Traits: The 'gothic romance vampire' archetype. Her story and abilities revolve around her tragic love for Cecilion. The illustration should feel like a page from a gothic romance novel, emphasizing her elegance, sorrow, and deadly power.`,
+                "Cecilion": `**Artwork Prompt: Cecilion, the Embrace of Night**
+This prompt is for creating a high-quality, sophisticated illustration of Cecilion.
+
+(1) Physical Appearance: A theatrical demon/vampire with a confident, perhaps arrogant, expression. He has pale skin, sharp features, and often dresses like a performer or nobleman. He has large, demonic bat-like wings that can be unfurled dramatically.
+(2) Attire: Wears a stylish and flamboyant outfit, like an opera singer or a nobleman's tuxedo, primarily in dark colors like black, deep blue, and purple, with red accents.
+(3) Weapon: Wields no weapon, casting blood magic from his hands.
+(4) Aura/Effects: His magic is a torrent of spectral, shadowy bats and dark, blood-red energy. His attacks should be visualized as swarms of bats lunging at his foes. His ultimate ability transforms him into a more powerful, blood-crazed form, increasing his power dramatically.
+(5) Unique Traits: The 'vampiric mage' or 'opera phantom' archetype. He is theatrical and powerful. The illustration should capture his dramatic flair, with his cape or wings spread wide as he unleashes a swarm of bats.`,
+                "Chang'e": `**Artwork Prompt: Chang'e, the Moon Palace Immortal**
+This prompt is for creating a high-quality, whimsical illustration of Chang'e.
+
+(1) Physical Appearance: A very young, adorable girl with large, innocent eyes. She is the younger sister of Zilong and has a cheerful, playful demeanor.
+(2) Attire: Wears traditional, elegant Chinese-style clothing, often a flowing dress in pastel colors like light blue, pink, and white.
+(3) Weapon: She doesn't hold a weapon herself. She is always accompanied by her magical companion, a white 'Crescent Moon' that floats around her and fires projectiles.
+(4) Aura/Effects: Her magic is bright, celestial, and child-like. She fires swarms of small, glowing stars or energy bolts from her Crescent Moon. Her ultimate, 'Meteor Shower', unleashes a massive barrage of colorful, glowing meteors. The effects should be sparkly and beautiful.
+(5) Unique Traits: A 'child mage' with immense celestial power. The key visual is her innocent appearance contrasted with the overwhelming power she can unleash. She is often depicted sitting or floating on her Crescent Moon.`,
+                "Chip": `**Artwork Prompt: Chip, the Portal Technician**
+This prompt is for creating a high-quality, inventive illustration of Chip.
+
+(1) Physical Appearance: A small, gnome-like or beaver-like creature with a knack for technology. He has a friendly, slightly frazzled look, with large goggles and an inventive spirit.
+(2) Attire: Wears a technician's or inventor's outfit, complete with a tool belt, overalls, and large, protective gloves.
+(3) Weapon: Wields a high-tech device or wrench that he uses to create and maintain his portals.
+(4) Aura/Effects: His abilities are all centered around his portal technology. He can create two linked portals on the map, which should be visualized as shimmering, stable wormholes. He can also create a larger, main portal at his location. The portals should glow with a distinct technological energy.
+(5) Unique Traits: The 'portal master' or 'tech support' hero. His gameplay is unique, and the illustration should clearly communicate his ability to manipulate space with his portals.`,
+                "Chou": `**Artwork Prompt: Chou, the Kung Fu Boy**
+This prompt is for creating a high-quality, action-packed illustration of Chou.
+
+(1) Physical Appearance: A young, athletic man with a confident and cocky attitude. He has a lean, muscular build, perfect for a martial artist. Often depicted with spiky hair and a bandage on his cheek.
+(2) Attire: Wears a simple martial artist's outfit, typically yellow track pants or kung fu pants and bandages wrapped around his fists and ankles. He is often shirtless, showing off his physique.
+(3) Weapon: His body is his weapon. He is a master of Jeet Kune Do.
+(4) Aura/Effects: His abilities are pure, flashy martial arts. His dashes leave a slight blur effect to show speed. His ultimate ability is a flurry of powerful kicks that sends the target flying, which should be visualized with a powerful impact and a dragon-shaped energy aura.
+(5) Unique Traits: Inspired by legendary martial artist Bruce Lee. He embodies the 'kung fu master' archetype. The illustration must be extremely dynamic, capturing him in a powerful, mid-air kicking pose.`,
+                "Cici": `**Artwork Prompt: Cici, the Buoyant Performer**
+This prompt is for creating a high-quality, joyful illustration of Cici.
+
+(1) Physical Appearance: A cheerful and energetic young woman with a constant smile. Her design is vibrant and full of life.
+(2) Attire: Wears a colorful, circus-performer-like outfit. The attire is playful and allows for a lot of movement, suitable for a yo-yo performer.
+(3) Weapon: Her weapon is a massive, high-tech yo-yo. The yo-yo can split apart and be used to attack enemies at various ranges.
+(4) Aura/Effects: Her attacks are all based on her yo-yo tricks. The yo-yo leaves a bright, colorful trail as it moves. Her abilities should look like a dazzling performance, with lots of spins, bounces, and flashy movements.
+(5) Unique Traits: The 'yo-yo master' archetype. Her entire theme is about performance and joy. The illustration should be incredibly dynamic, showing her leaping through the air while performing a complex and powerful yo-yo trick.`,
+                "Claude": `**Artwork Prompt: Claude & Dexter**
+This prompt is for creating a high-quality, mischievous illustration of Claude and his partner, Dexter.
+
+(1) Physical Appearance: Claude is a handsome and roguish young man with a charming, confident smirk. He is always accompanied by Dexter, his small, intelligent pet monkey.
+(2) Attire: Wears a stylish thief's outfit, often including a long coat, vest, and trousers. His clothes are fashionable but also practical for his line of work. Dexter often wears a tiny matching outfit or a small hat.
+(3) Weapon: Claude wields a pair of high-tech pistols that he can fire with incredible speed.
+(4) Aura/Effects: His abilities are fast-paced and chaotic. His ultimate, 'Blazing Duet', has him and Dexter spinning around, firing in all directions in a circular barrage of bullets. This should be a whirlwind of muzzle flashes and bullet trails.
+(5) Unique Traits: The classic 'charming thief' archetype with an animal sidekick. The interaction and synergy between Claude and Dexter are central to his design. The illustration should capture their perfect teamwork and mischievous nature.`,
+                "Clint": `**Artwork Prompt: Clint, the Westward Justice**
+This prompt is for creating a high-quality, classic illustration of Clint.
+
+(1) Physical Appearance: A rugged and grizzled lawman with a stoic expression. He has the look of a classic western hero, with a sharp gaze and maybe some stubble.
+(2) Attire: Wears traditional cowboy attire: a wide-brimmed hat, a poncho or duster coat, a vest, and cowboy boots.
+(3) Weapon: He wields a long-barreled revolver and a powerful rifle/shotgun for his other abilities. The firearms are classic and well-maintained.
+(4) Aura/Effects: His abilities are straightforward and ballistic. He throws a smoke bomb that should create a cloud of obscuring smoke. His skills are all about quick draws, powerful shots, and agile dodges. The effects are realistic with a slight cinematic flair.
+(5) Unique Traits: The archetypal 'gunslinger' from a classic Western film. The illustration should have the feel of a movie poster, capturing him in a dramatic pose, perhaps during a high-noon duel.`,
+                "Cyclops": `**Artwork Prompt: Cyclops, the Starsoul Magician**
+This prompt is for creating a high-quality, cosmic illustration of Cyclops.
+
+(1) Physical Appearance: A small, one-eyed giant (cyclops) with a curious and scholarly demeanor. Despite his race, he is tiny and more focused on magic than brute strength.
+(2) Attire: Wears a magician's robe and a large, pointed hat. His attire is adorned with stars, moons, and planetary symbols.
+(3) Weapon: He uses no weapon, casting cosmic magic from his hands and his single, powerful eye. He carries an hourglass that helps him manipulate cooldowns.
+(4) Aura/Effects: His magic is all about celestial bodies. He throws 'Stardust Shock' waves and creates 'Planets Attack' spheres that orbit him and then attack enemies. His ultimate, 'Star Power Lockdown', traps a single enemy in a massive, inescapable sphere of cosmic energy.
+(5) Unique Traits: The 'astromancer' archetype. His design is a cute take on a typically monstrous creature. The illustration should emphasize his command over the cosmos, with planets and stars swirling around him.`,
+                "Diggie": `**Artwork Prompt: Diggie, the Timekeeper**
+This prompt is for creating a high-quality, whimsical illustration of Diggie.
+
+(1) Physical Appearance: A small, adorable owl-like creature with large, curious eyes. He is an academic and a scholar of time.
+(2) Attire: Wears academic robes, a graduation cap, and glasses. He is often depicted holding a small clock or a lantern.
+(3) Weapon: His weapons are his 'Alarm Bombs'. These are small, cute, owl-faced bombs that chase after enemies before exploding. He also carries a time-manipulating clock or staff.
+(4) Aura/Effects: His magic is based on time. His ultimate ability creates a large, glowing green aura around his allies, making them immune to crowd control. This should be visualized as a protective, shimmering bubble of temporal energy.
+(5) Unique Traits: The 'time mage' and 'wise owl' archetypes combined in a cute package. The illustration should highlight his clever and supportive nature, perhaps showing him protecting his allies with his time-reversing magic.`,
+                "Dyrroth": `**Artwork Prompt: Dyrroth, the Prince of the Abyss**
+This prompt is for creating a high-quality, menacing illustration of Dyrroth.
+
+(1) Physical Appearance: A young man corrupted by the Abyss. He has a handsome but cruel face, often with glowing red or abyssal-colored eyes and sharp, demonic features like small horns.
+(2) Attire: Wears dark, jagged abyssal armor, often in shades of black, deep red, and purple. The armor has a demonic, organic look to it.
+(3) Weapon: He doesn't wield a weapon in the traditional sense; his arms can manifest abyssal energy claws or blades. He fights with brutal, physical force infused with dark power.
+(4) Aura/Effects: His body is constantly surrounded by a dark, corrupting abyssal aura. His attacks are vicious, leaving trails of dark red and black energy. His ultimate is a devastating lunging strike that should have a massive, explosive impact effect.
+(5) Unique Traits: The 'corrupted prince' or 'abyssal warrior' archetype. He is the embodiment of the Abyss's destructive power. The illustration should be dark, aggressive, and emphasize his raw, savage strength.`,
+                "Edith": `**Artwork Prompt: Edith & Phylax**
+This prompt is for creating a high-quality, symbiotic illustration of Edith and Phylax.
+
+(1) Physical Appearance: Edith is a young, innocent-looking girl with holy powers. Phylax is the massive, ancient armored golem that she controls and resides within.
+(2) Attire: Edith wears simple, priestess-like clothing. Phylax's 'attire' is its own stone and metal body, a suit of ancient, holy armor that can transform.
+(3) Weapon: In her golem form (Phylax), the weapons are its massive fists and control over primal earth and lightning. In her human form, Edith flies out of the golem and attacks with ranged bolts of holy lightning.
+(4) Aura/Effects: Phylax's abilities are heavy and impactful, with earth-shattering stomps and lightning strikes. When Edith uses her ultimate, Phylax reconfigures, and she emerges, surrounded by a brilliant aura of holy lightning, raining down attacks from above.
+(5) Unique Traits: A 'symbiotic hero'. The duality between the massive, tanky golem and the agile, high-damage priestess is the core concept. The illustration should ideally capture the moment of her ultimate transformation.`,
+                "Esmeralda": `**Artwork Prompt: Esmeralda, the Astrologer**
+This prompt is for creating a high-quality, mystical illustration of Esmeralda.
+
+(1) Physical Appearance: A beautiful and graceful woman with a mysterious aura. She has tanned skin and long, flowing hair, often adorned with celestial jewelry.
+(2) Attire: Wears a beautiful, flowing outfit reminiscent of a fortune teller or a desert dancer, decorated with stars, moons, and astrological symbols. Her attire often includes long, flowing scarves or sashes named 'Stardust' and 'Frostmoon'.
+(3) Weapon: She does not use a physical weapon. Her weapons are her two scarves, Stardust and Frostmoon, which float and dance around her, imbued with cosmic energy.
+(4) Aura/Effects: Her abilities manipulate two types of energy: Stardust (physical, white/gold) and Frostmoon (magical shield, deep blue/purple). She should be depicted with these two cosmic energies swirling around her in a graceful dance, creating a beautiful and powerful visual effect.
+(5) Unique Traits: The 'astrologer' or 'cosmic dancer' archetype. Her movements are fluid and dance-like. The key visual is the interplay between the two opposing cosmic forces she commands.`,
+                "Estes": `**Artwork Prompt: Estes, the Moon Elf King**
+This prompt is for creating a high-quality, serene illustration of Estes.
+
+(1) Physical Appearance: A wise and regal male elf with a calm and gentle demeanor. He has long, flowing white hair, pointed ears, and a kind expression.
+(2) Attire: Wears ornate, kingly elven robes, primarily in white, silver, and shades of light blue or green. His attire is adorned with moon and nature motifs.
+(3) Weapon: He carries the 'Scripture of the Moon', a sacred scroll or book from which he casts his healing spells.
+(4) Aura/Effects: His magic is pure, gentle healing energy, visualized as a soft, glowing moonlight-green or silver light. His ultimate ability creates a large, pulsating circle of healing moonlight that links to all nearby allies, showing visible streams of healing energy flowing to them.
+(5) Unique Traits: The archetypal 'elven healer' or 'benevolent king'. He exudes an aura of peace and restoration. The illustration should capture his serene power and his role as a protector and healer for his people.`,
+                "Eudora": `**Artwork Prompt: Eudora, the Lightning Sorceress**
+This prompt is for creating a high-quality, electrifying illustration of Eudora.
+
+(1) Physical Appearance: A powerful and confident sorceress with a commanding presence. She often has striking features and hair that seems to crackle with static electricity.
+(2) Attire: Wears an elegant and revealing sorceress's robe, often in shades of deep blue, purple, and gold. Her outfit is adorned with lightning bolt motifs.
+(3) Weapon: She wields no physical weapon, summoning and controlling lightning directly from her hands.
+(4) Aura/Effects: Her magic is pure, raw lightning. She should be depicted surrounded by crackling bolts of yellow or blue electricity. Her abilities are a sequence of devastating lightning strikes: a forked lightning bolt, a ball of lightning, and a massive lightning storm that crashes down from the sky. The effects should be bright, loud, and powerful.
+(5) Unique Traits: The classic 'lightning mage' archetype. She is the embodiment of the storm's fury. The illustration should showcase her absolute command over one of nature's most powerful forces.`,
+                "Fanny": `**Artwork Prompt: Fanny, the Blade Dancer**
+This prompt is for creating a high-quality, high-motion illustration of Fanny.
+
+(1) Physical Appearance: A young, fiercely determined woman with an athletic and agile build. Her expression is one of intense focus.
+(2) Attire: Wears a light, practical military-style uniform that allows for maximum freedom of movement.
+(3) Weapon: Wields a pair of sharp blades. Her most important gear is the set of steel cables and hooks she uses to propel herself through the air with incredible speed.
+(4) Aura/Effects: Her abilities are all about mobility. She should be depicted flying through the air, with her steel cables latched onto unseen points. Her 'Tornado Strike' involves her spinning rapidly with her blades out, creating a deadly whirlwind of steel. The key visual is the blur of motion and the trails left by her cables.
+(5) Unique Traits: The 'high-mobility assassin'. Her unique cable mechanic makes her one of the most dynamic heroes. The illustration must capture her in mid-flight, embodying speed and aerial combat prowess.`,
+                "Faramis": `**Artwork Prompt: Faramis, the Alchemist**
+This prompt is for creating a high-quality, eerie illustration of Faramis.
+
+(1) Physical Appearance: A cursed alchemist who exists between life and death. His appearance is gaunt and haunted, with glowing, ethereal eyes. He is often accompanied by spectral wisps.
+(2) Attire: Wears the tattered and worn robes of a scholar or alchemist, perhaps with some chains or soul-related paraphernalia.
+(3) Weapon: Carries an alchemical staff or scepter, which he uses to channel his soul magic.
+(4) Aura/Effects: His magic is a sickly, ethereal green or teal, representing souls and necromantic energy. His abilities involve him turning into a shadowy, spectral form to pass through enemies and pull them together. His ultimate creates a large altar on the ground that resurrects fallen allies as spectral shades. This should be a powerful, ghostly visual effect.
+(5) Unique Traits: The 'necromancer alchemist' archetype. His theme is about cheating death and manipulating souls. The illustration should have a ghostly, otherworldly feel, emphasizing his connection to the spirit realm.`,
+                "Floryn": `**Artwork Prompt: Floryn, the Budding Hope**
+This prompt is for creating a high-quality, gentle illustration of Floryn.
+
+(1) Physical Appearance: A kind and gentle girl with a deep connection to nature. She has a sweet, innocent expression.
+(2) Attire: Wears simple, nature-inspired clothing, perhaps made of leaves and petals, in soft shades of green and pink.
+(3) Weapon: She doesn't wield a weapon. She is accompanied by her pet, Dew, a small, glowing flower-like spirit that assists her in healing. Dew resides in a magical lantern or vessel that Floryn carries.
+(4) Aura/Effects: Her magic is pure life and nature energy, focused on healing. Dew can fire gentle healing orbs. Her ultimate ability is a global heal, which should be visualized as a wave of life-giving green and pink light that washes over the entire battlefield, with flowers blooming in its wake.
+(5) Unique Traits: The 'flower child' or 'nature healer' archetype. Her innocence and her bond with her companion, Dew, are her defining features. The illustration should be full of light, nature, and gentle, healing energy.`,
+                "Franco": `**Artwork Prompt: Franco, the Frozen Warrior**
+This prompt is for creating a high-quality, formidable illustration of Franco.
+
+(1) Physical Appearance: A large, burly, and wild-looking warrior from a northern, frozen land. He has a thick beard, a wild look in his eyes, and a powerful, Viking-like build.
+(2) Attire: Wears thick furs, leather, and some pieces of crude iron armor, typical of a northern barbarian or Viking.
+(3) Weapon: His signature weapon is a massive iron hook on a long chain, which he uses to pull his enemies towards him. He also carries a large, heavy hammer or axe.
+(4) Aura/Effects: His abilities are brutal and physical. The 'Iron Hook' is his key visual—it should be shown flying through the air or having just snagged a target. His ultimate is a furious, multi-hit beatdown with his hammer. The effects are grounded and visceral, with a hint of frost from his homeland.
+(5) Unique Traits: The 'Viking barbarian' archetype. He is famous and feared for his ability to hook and isolate a single target. The illustration must feature his iconic hook in a dynamic and menacing way.`,
+                "Fredrinn": `**Artwork Prompt: Fredrinn, the Rogue Appraiser**
+This prompt is for creating a high-quality, rugged illustration of Fredrinn.
+
+(1) Physical Appearance: A rugged, handsome man with a cunning look in his eye. A defining feature is one of his arms, which is crystalline and glows with a strange energy, a result of a curse.
+(2) Attire: Wears the stylish but practical outfit of a rogue or an appraiser, with a long coat and fine clothes that are slightly disheveled from his adventures.
+(3) Weapon: He wields a massive, crystal-edged broadsword that complements his cursed arm.
+(4) Aura/Effects: His power comes from the strange crystal. As he takes damage, he stores it as grey health, and his crystal arm and sword should glow more intensely. His abilities are a combo of taunts and powerful sword strikes, creating crystalline sound wave effects.
+(5) Unique Traits: The 'cursed rogue' or 'tanky fighter' archetype. His unique resource mechanic (combo points and crystal energy) and his ability to turn damage into power are his key features.`,
+                "Freya": `**Artwork Prompt: Freya, the Valkyrie**
+This prompt is for creating a high-quality, divine illustration of Freya.
+
+(1) Physical Appearance: A powerful and beautiful warrior goddess with a brave and noble expression. She is the embodiment of a Valkyrie from Norse mythology.
+(2) Attire: Wears shining, ornate plate armor, often with a winged helmet and a flowing cape. Her armor is typically in shades of silver, gold, and blue.
+(3) Weapon: She wields a sacred sword and a sturdy, ornate shield.
+(4) Aura/Effects: Her power is that of a divine warrior. Her ultimate ability, 'Valkyrie Descent', has her leap into the air, transforming her armor to include magnificent wings of light, and crash down onto her enemies. In this powered-up state, her attacks become ranged and explosive. The transformation should be a brilliant flash of holy light.
+(5) Unique Traits: The 'Valkyrie warrior' archetype. Her ability to transform and take flight during her ultimate is her most iconic feature. The illustration should capture her in her majestic, winged Valkyrie state.`,
+                "Gatotkaca": `**Artwork Prompt: Gatotkaca, the Iron Bone**
+This prompt is for creating a high-quality, mighty illustration of Gatotkaca.
+
+(1) Physical Appearance: A demigod of immense power with a body said to be of 'iron and bone'. He is incredibly muscular and has an unbreakable, heroic look.
+(2) Attire: Wears traditional, mythical Javanese armor, often with golden gauntlets and greaves, adorned with celestial patterns.
+(3) Weapon: He fights with his bare fists, which glow with cosmic energy.
+(4) Aura/Effects: His power is cosmic and divine. As he takes damage, he builds up rage, causing him to glow with a powerful golden or blue aura. His ultimate, 'Avatar of the Guardian', has him charge up and leap high into the sky, crashing down like a meteor onto his enemies, creating a massive, earth-shattering shockwave.
+(5) Unique Traits: Based on a mighty hero from Indonesian mythology (the Mahabharata). His defining skill is his devastating, high-impact ultimate. The illustration should depict him as an unstoppable, divine force of nature.`,
+                "Gloo": `**Artwork Prompt: Gloo, the Swamp Spirits**
+This prompt is for creating a high-quality, mischievous illustration of Gloo.
+
+(1) Physical Appearance: A large, purple, gelatinous slime creature with a playful and mischievous expression. Its body is goopy and constantly shifting.
+(2) Attire: Being a slime, it wears no clothes, but it might have bits of debris (like leaves or sticks) suspended within its body.
+(3) Weapon: It attacks by slamming parts of its body and spitting out sticky goo.
+(4) Aura/Effects: Its abilities are all based on its sticky, divisible nature. It can split apart into many smaller 'Goos'. Its ultimate allows it to attach itself to an enemy hero, becoming a parasitic blob that the player can use to move the enemy around. This should be a comical but threatening visual.
+(5) Unique Traits: The 'sentient slime' archetype. Its unique ultimate ability to possess and control an enemy's movement is its most defining and memorable feature.`,
+                "Gord": `**Artwork Prompt: Gord, the Mystic Magician**
+This prompt is for creating a high-quality, arcane illustration of Gord.
+
+(1) Physical Appearance: A powerful sorcerer who has transcended his physical form, becoming a being of pure mystic energy. He is often depicted as a humanoid figure with glowing eyes, riding on a floating surfboard-like device.
+(2) Attire: Wears arcane robes that seem to be woven from cosmic energy itself, in shades of purple, gold, and blue.
+(3) Weapon: He doesn't hold a weapon; his surfboard is his tool and conveyance. He casts magic from his hands.
+(4) Aura/Effects: His magic is raw, untamed mystic energy. He can throw a bouncing orb of condensed magic. His ultimate ability is a continuous, high-damage beam of pure mystic energy that he fires from his hands while on his board. This should be a massive, brilliant beam of destructive power.
+(5) Unique Traits: The 'arcane surfer' or 'cosmic mage' archetype. The key visual is him gracefully riding his arcane surfboard while unleashing devastating beams of energy.`,
+                "Granger": `**Artwork Prompt: Granger, the Death Chanter**
+This prompt is for creating a high-quality, somber illustration of Granger.
+
+(1) Physical Appearance: A young, grim demon hunter with a cool and aloof demeanor. His movements are precise and elegant, like a musician.
+(2) Attire: Wears a long, dark trench coat, befitting a wandering demon hunter. His style is gothic and stylish.
+(3) Weapon: He wields a powerful, custom-made pistol. His most iconic feature is the violin case he carries on his back, which transforms into a supergun to fire his ultimate bullets.
+(4) Aura/Effects: His abilities are all about precise, powerful shots. His skills are named after musical terms (Rhapsody, Rondo). His ultimate, 'Death Sonata', has him load his gun with three super bullets, each one a powerful, long-range, piercing shot. The final bullet should have a massive, explosive impact.
+(5) Unique Traits: The 'gun-toting musician' or 'demon hunter' archetype. The blend of music and death is his central theme. The illustration should capture his melancholic elegance, with his violin-case gun being a prominent feature.`,
+                "Grock": `**Artwork Prompt: Grock, the Fortress Titan**
+This prompt is for creating a high-quality, stoic illustration of Grock.
+
+(1) Physical Appearance: A massive golem or titan whose body seems to be an entire fortress or castle. He is made of stone and earth, with moss growing on him. He has a simple, ancient face.
+(2) Attire: Being a living fortress, he wears no clothes, but he may have banners or flags attached to his castle-like shoulders.
+(3) Weapon: He wields a massive stone tower or bastion as a weapon, swinging it like a giant club.
+(4) Aura/Effects: His powers are all earth-based. He can summon a massive, impassable 'Guardian's Wall' of stone from the ground. His ultimate is a powerful charge forward that should show him shattering the earth as he moves. The effects are heavy, rocky, and powerful.
+(5) Unique Traits: A literal 'walking fortress'. His connection to walls and structures is unique. The illustration should emphasize his immense size, strength, and his identity as a living piece of architecture.`,
+                "Guinevere": `**Artwork Prompt: Guinevere, Ms. Violet**
+This prompt is for creating a high-quality, elegant illustration of Guinevere.
+
+(1) Physical Appearance: A beautiful and graceful young noblewoman with a playful yet powerful demeanor. She has long, flowing hair and a confident smile. She is the sister of Lancelot.
+(2) Attire: Wears a gorgeous and fashionable dress, often in shades of violet and purple. Her outfit is a mix of a ball gown and a magic user's combat attire, allowing for graceful movement.
+(3) Weapon: She uses no physical weapon, fighting with a combination of powerful magic and graceful martial arts.
+(4) Aura/Effects: Her magic is a vibrant, violet-colored energy. Her signature ability involves her leaping into the air, knocking enemies up, and then unleashing a powerful, swirling vortex of magical energy around her. This 'Violet Requiem' should be a beautiful and devastating display of power.
+(5) Unique Traits: The 'magic knight' or 'fencing mage' archetype. Her fighting style is a unique and elegant blend of magic and physical attacks. The illustration should capture her in a graceful, mid-air pose, surrounded by her violet magic.`,
+                "Gusion": `**Artwork Prompt: Gusion, the Holy Blade**
+This prompt is for creating a high-quality, dynamic illustration of Gusion, the Holy Blade.
+
+(1) Physical Appearance: Youthful, handsome face with sharp, aristocratic features. Striking silver-white hair in a modern, swept-back cut. Piercing, luminous violet eyes.
+(2) Attire: Sophisticated, dark-colored high-collared coat (deep purple/indigo) with intricate silver/gold embroidery and the Paxley family crest. Wears sleek, dark gloves, form-fitting trousers, and armored boots.
+(3) Weapon: A set of elegant, magical daggers that glow from within, etched with pulsing magical runes. Hilts are ornate and match his outfit's metallic accents.
+(4) Aura/Effects: Vibrant, electric violet energy. Daggers leave sharp trails of violet light, conveying supernatural speed. The aura is controlled and deadly.
+(5) Unique Traits: Embodies a 'magical nobleman' or 'arcane assassin' archetype. Capture motion blur to emphasize speed. The primary light source should be the glow from Gusion and his daggers.`,
+                "Hanabi": `**Artwork Prompt: Hanabi, the Scarlet Flower**
+This prompt is for creating a high-quality, focused illustration of Hanabi, the Scarlet Flower.
+
+(1) Physical Appearance: A graceful but deadly female ninja (kunoichi) with a slender, agile build. She has pale skin and striking, intense crimson eyes that convey unwavering focus. Her long, dark hair is styled in a high ponytail. A distinctive mask, often red or black, conceals the lower half of her face.
+(2) Attire: A combat-ready, stylized kimono, primarily in shades of deep red, black, and accented with gold. The outfit is designed for mobility, featuring armored gauntlets and greaves. A large, ornate ribbon is tied into a bow at her back, resembling the petals of her signature flower.
+(3) Weapon: Hanabi wields the Higanbana, a unique and massive bladed weapon that resembles a giant, ornate shuriken or a bladed wheel. It should be depicted with sharp, gleaming edges, intricate floral patterns, and a formidable presence.
+(4) Aura/Effects: Her power manifests as shadowy, dark energy mixed with crimson red highlights. When she attacks, her bouncing blades should leave subtle, dark energy trails between targets. Her ultimate ability creates a large, blooming spider lily (Higanbana) on the ground, which should have an ominous, glowing red effect.
+(5) Unique Traits: The design is heavily inspired by Japanese shinobi and the symbolic Higanbana flower, which represents final goodbyes. The key visual motif is this scarlet flower, which should be incorporated into her weapon and ability effects.`,
+                "Hanzo": `**Artwork Prompt: Hanzo, the Akuma Ninja**
+This prompt is for creating a high-quality, menacing illustration of Hanzo.
+
+(1) Physical Appearance: A formidable ninja whose body is sealed with a powerful, bloodthirsty demon. In his human form, he is imposing. In his demon form, he is a terrifying, spectral being.
+(2) Attire: Wears the dark garb of an elite, forbidden ninja clan, with a large scroll on his back.
+(3) Weapon: Wields a massive, demonic, blood-fed glaive called 'Ame no Habakiri'.
+(4) Aura/Effects: His ultimate is his key feature. His physical body remains stationary while his spirit, in the form of a 'Blood Demon', is released to wreak havoc. This demon form should be a spectral, terrifying entity. His abilities in this form are wide, sweeping attacks with a massive phantom weapon, all wreathed in dark, blood-red energy.
+(5) Unique Traits: The 'astral projection ninja'. The duality between his vulnerable physical body and his incredibly powerful, ranged demon form is his core concept. The illustration should showcase his terrifying Blood Demon form.`,
+                "Harith": `**Artwork Prompt: Harith, the Time Traveler**
+This prompt is for creating a high-quality, nimble illustration of Harith.
+
+(1) Physical Appearance: A young, cat-like Leonin with a clever and mischievous expression. He has feline ears, a tail, and a small, agile frame.
+(2) Attire: Wears the attire of a magical scholar or adept, with robes, a sash, and often a key-like accessory, symbolizing his control over time.
+(3) Weapon: Carries a magical key or scepter that he uses to channel his chronomancy.
+(4) Aura/Effects: His magic is temporal and arcane, visualized as a bright, cyan or blue energy. He can create a 'Zaman Force' that leaves behind a phantom image of himself. His ultimate creates a large area where his cooldowns are drastically reduced, which should be visualized as a large, glowing cross-shaped matrix on the ground.
+(5) Unique Traits: The 'time-bending mage' archetype. His gameplay is all about high mobility and constant spellcasting. The illustration should capture his incredible agility and the shimmering, temporal nature of his magic.`,
+                "Harley": `**Artwork Prompt: Harley, the Mage Genius**
+This prompt is for creating a high-quality, whimsical illustration of Harley.
+
+(1) Physical Appearance: A young, prodigious boy magician with a confident, showman-like personality. He has a small frame and often a very large, oversized magician's top hat. He is the brother of Lesley.
+(2) Attire: Wears a classic magician's costume, including a tailcoat, a vest, and his signature oversized top hat.
+(3) Weapon: His weapons are enchanted playing cards that he throws with deadly precision. He also uses a magic wand or staff.
+(4) Aura/Effects: His magic is flashy and theatrical. He can teleport, leaving behind his hat as a marker. His ultimate ability traps an enemy in a ring of fire, which should be visualized as a glowing circle of cards that then erupts in a burst of magical energy.
+(5) Unique Traits: The classic 'stage magician' archetype. He is all about performance and misdirection. The illustration should show him in a dynamic pose, as if in the middle of a grand illusion, cards flying everywhere.`,
+                "Hayabusa": `**Artwork Prompt: Hayabusa, the Shadow of Iga**
+This prompt is for creating a high-quality, deadly illustration of Hayabusa.
+
+(1) Physical Appearance: A skilled and mysterious ninja with a lean, athletic build. His face is almost always obscured by a mask, leaving only his intense, focused eyes visible.
+(2) Attire: Wears a traditional but stylish ninja's garb, designed for stealth and agility. The outfit is typically dark, with colored accents and armor plates.
+(3) Weapon: Wields a ninjato (short, straight ninja sword). His primary tools, however, are the phantoms and shurikens he commands.
+(4) Aura/Effects: His power is ninjutsu, focusing on shadows and speed. He can cast multiple 'Phantoms' of himself that travel in different directions. His ultimate, 'Ougi: Shadow Kill', has him vanishing and then striking the enemy multiple times from the shadows. This should be visualized as a flurry of shadowy slash effects, with Hayabusa himself being just a blur of motion.
+(5) Unique Traits: The archetypal 'master ninja'. His theme is about shadows, speed, and unleashing death from unseen angles. The illustration should feature him and his shadow clones, creating a sense of inescapable attack.`,
+                "Helcurt": `**Artwork Prompt: Helcurt, the Shadowbringer**
+This prompt is for creating a high-quality, terrifying illustration of Helcurt.
+
+(1) Physical Appearance: A terrifying, insectoid creature from the Abyss. It has a long, slender body, a large head with glowing eyes and no mouth, and two massive, stinger-tipped appendages on its back.
+(2) Attire: Being a creature, it wears no clothes, but its chitinous exoskeleton acts as armor.
+(3) Weapon: Its primary weapons are the massive, razor-sharp stingers on its back, which it uses to impale its victims.
+(4) Aura/Effects: Its presence radiates darkness and silence. Its ultimate ability plunges the entire battlefield into complete darkness, which should be a dramatic, map-wide visual effect of encroaching shadows. Its attacks are swift and silent, leaving trails of dark energy.
+(5) Unique Traits: A 'creature of the night' or 'boogeyman' archetype. Its design is meant to be unsettling and alien. The illustration should be dark and menacing, emphasizing its predatory nature and its ability to blot out all light.`,
+                "Hilda": `**Artwork Prompt: Hilda, the Power of Megalith**
+This prompt is for creating a high-quality, ferocious illustration of Hilda.
+
+(1) Physical Appearance: A tall, extremely muscular and powerful tribal woman with a fierce, wild expression. She is a warrior of the wilderness.
+(2) Attire: Wears tribal clothing made of furs, leather, and bones, with war paint on her face and body. Her outfit is fitting for a barbarian queen.
+(3) Weapon: Wields a massive, double-headed battle axe. The weapon is huge and looks incredibly heavy.
+(4) Aura/Effects: Her power comes from her connection to the wild and her sheer ferocity. She can gain a shield when hiding in bushes, which should look like a primal, earthy aura. Her ultimate is a series of powerful axe slams that should crack the ground with each hit, growing more powerful with each kill she has.
+(5) Unique Traits: The 'barbarian warrior' archetype. She embodies the untamed power of the wilderness. The illustration should capture her raw strength and savage fighting style, perhaps showing her letting out a powerful battle cry.`,
+                "Hylos": `**Artwork Prompt: Hylos, the Grand Warden**
+This prompt is for creating a high-quality, majestic illustration of Hylos.
+
+(1) Physical Appearance: A powerful and mystical centaur (half-man, half-horse). He has a noble, ancient look, with a wise expression and a powerful build.
+(2) Attire: Wears ornate, nature-themed armor on his humanoid torso, adorned with glowing gems and ancient patterns.
+(3) Weapon: He wields a large, heavy axe or a mystical staff.
+(4) Aura/Effects: His magic is a mix of life-giving and punishing nature energy, glowing with a serene blue light. His ultimate, 'Glorious Pathway', creates a massive, long river of light on the ground that speeds up allies and slows enemies. This should be a grand, beautiful visual effect that flows across the terrain.
+(5) Unique Traits: The 'centaur guardian' or 'warden of nature' archetype. His ability to create a massive pathway of power for his team is his defining feature. The illustration should depict him as a majestic and ancient protector.`,
+                "Irithel": `**Artwork Prompt: Irithel & Leo**
+This prompt is for creating a high-quality, wild illustration of Irithel and her companion, Leo.
+
+(1) Physical Appearance: Irithel is a strong, jungle-raised woman with a focused, archer's gaze. Leo is her mount, a massive, powerful smilodon (saber-toothed cat).
+(2) Attire: Irithel wears practical, tribal-style leather armor made from hides and furs, suitable for living in the jungle.
+(3) Weapon: Irithel wields a large, powerful crossbow. A unique trait is that she can fire arrows while Leo is moving.
+(4) Aura/Effects: Her abilities are based on her powerful crossbow shots. Her ultimate allows Leo to roar and leap forward, enhancing her attacks to be explosive. These enhanced arrows should create small, fiery explosions on impact.
+(5) Unique Traits: The 'mounted archer' archetype. The powerful synergy between Irithel and her beast companion Leo is her defining feature. The illustration must show them as a single, deadly unit, moving and attacking in perfect harmony.`,
+                "Ixia": `**Artwork Prompt: Ixia, the Arclight Outlaw**
+This prompt is for creating a high-quality, inventive illustration of Ixia.
+
+(1) Physical Appearance: A young, resourceful inventor and marksman with a clever and determined expression.
+(2) Attire: Wears a self-made, steampunk-inspired outfit combining practical leather with scavenged metal parts. Her attire is that of a desert wanderer and inventor.
+(3) Weapon: Her weapon is a unique, self-constructed firearm called an 'Arclight'. It's a modular weapon that can fire energy blasts and can be deployed to transform into a stationary cannon.
+(4) Aura/Effects: Her abilities use 'Arclight' energy, which is a mix of concussive force and arcane energy. Her ultimate has her deploy her weapon, which then unfolds into a fan-shaped array of cannons, firing a massive barrage in a wide arc. This should be a spectacular display of firepower.
+(5) Unique Traits: The 'scrap-tech inventor' archetype. Her ingenuity and her unique, transforming weapon are her key features. The illustration should showcase her creative firepower and resourceful nature.`,
+                "Jawhead": `**Artwork Prompt: Jawhead & Ellie**
+This prompt is for creating a high-quality, playful but powerful illustration of Jawhead and Ellie.
+
+(1) Physical Appearance: Jawhead is a large, powerful robot with a bulky frame and a prominent jaw-like feature on its chassis. Ellie is the small, cute, and seemingly innocent little girl who pilots the mech from a cockpit.
+(2) Attire: Ellie wears a simple, cute dress. Jawhead's 'attire' is its own metal plating, which might be painted with some childish drawings by Ellie.
+(3) Weapon: Jawhead's weapons are rocket launchers built into its body and its powerful fists. Its most unique ability is its 'Ejector', which allows it to throw allies or enemies.
+(4) Aura/Effects: Jawhead's missile attacks should be explosive and chaotic. The 'Ejector' ability should be visualized with a clear targeting indicator and a powerful throwing motion. The effects are a mix of high-tech explosions and a bit of cartoonish fun.
+(5) Unique Traits: The 'little girl in a big mech' trope. The contrast between the adorable pilot and the destructive robot is the central theme. The illustration should capture this duality, showing both the power of the mech and the playful nature of its pilot.`,
+                "Johnson": `**Artwork Prompt: Johnson, the Mustang**
+This prompt is for creating a high-quality, transformative illustration of Johnson.
+
+(1) Physical Appearance: A large, powerfully built man who is also a cyborg. His body is bulky and metallic.
+(2) Attire: He is a cyborg, so his body is his attire. It resembles heavy-duty armor or the chassis of a vehicle. He carries a massive shield.
+(3) Weapon: His fists and a massive shield. His true weapon is his alternate form.
+(4) Aura/Effects: His ultimate ability is his defining feature: he transforms into a fully functional car. He can then drive around the entire map at high speed, often carrying an allied hero. When he crashes, it creates a massive explosion and stun. The transformation sequence should be a spectacular, 'Transformers'-style event.
+(5) Unique Traits: A literal 'transformer' hero. His ability to become a car and transport an ally is one of the most unique and game-changing skills. The illustration should showcase his powerful car form, perhaps mid-drift or just before a massive crash.`,
+                "Joy": `**Artwork Prompt: Joy, the Flash of Miracle**
+This prompt is for creating a high-quality, energetic illustration of Joy.
+
+(1) Physical Appearance: A young, cheerful Leonin with a love for music and rhythm. She is small, incredibly fast, and always seems to be moving to a beat.
+(2) Attire: Wears a stylish, modern, and colorful outfit that is easy to move in, fitting her energetic personality.
+(3) Weapon: She uses no weapon. She attacks by dashing and using her magical rhythm.
+(4) Aura/Effects: Her abilities are all about dashing in perfect rhythm with the beat of her inner music. Each successful dash should leave a trail of colorful, musical energy. Her ultimate has her become immune and dash multiple times, creating a spectacular light show of musical notes and bright colors.
+(5) Unique Traits: The 'rhythm-based assassin'. Her gameplay is a dance. The illustration must capture her joyful expression and the fluid, musical nature of her high-speed movements.`,
+                "Julian": `**Artwork Prompt: Julian, the Scarlet Raven**
+This prompt is for creating a high-quality, edgy illustration of Julian.
+
+(1) Physical Appearance: A handsome, brooding young man with a rebellious and defiant attitude. He has distinctive, often multi-colored hair and an intense gaze.
+(2) Attire: Wears a stylish, somewhat gothic outfit, associated with the 'Forsaken Light'. His clothes might be tattered but are still ornate, featuring chains and raven-feather motifs.
+(3) Weapon: Wields a unique weapon: a chain scythe or chained blades. The chains are a key part of his combat style.
+(4) Aura/Effects: His abilities are unique in that he enhances them after casting two previous skills. His enhanced abilities should have much more dramatic and powerful visual effects. His magic is a dark, shadowy energy, often with a crimson or purple hue. His attacks are wide, sweeping, and chain-based.
+(5) Unique Traits: The 'emo anti-hero' or 'chained weapon master'. His unique skill enhancement mechanic should be visualized if possible, perhaps showing a powered-up state with a more intense aura. The fluid, deadly motion of his chains is the key visual.`,
+                "Kadita": `**Artwork Prompt: Kadita, the Ocean Goddess**
+This prompt is for creating a high-quality, majestic illustration of Kadita.
+
+(1) Physical Appearance: A beautiful and powerful goddess of the sea. She has a regal bearing, with flowing hair that looks like water and piercing, ocean-blue eyes.
+(2) Attire: Wears clothing that seems to be made of water, coral, and pearls. Her attire is that of a mermaid queen or sea deity, often adorned with a trident-like crown.
+(3) Weapon: Her weapon is her complete command over the ocean. She wields a trident in some skins, but primarily casts magic with her hands.
+(4) Aura/Effects: All her abilities are water-based. She can transform into a wave to travel, summon tidal waves to knock enemies up, and her ultimate has her dissolve into water, becoming immune, before erupting outwards with a massive tsunami. The water effects should be grand, powerful, and beautiful.
+(5) Unique Traits: Based on the Indonesian goddess of the sea, Nyai Roro Kidul. She is the embodiment of the ocean's grace and fury. The illustration should depict her with absolute control over massive bodies of water.`,
+                "Kagura": `**Artwork Prompt: Kagura, Onmyouji Master**
+This prompt is for creating a high-quality, graceful illustration of Kagura.
+
+(1) Physical Appearance: Elegant and youthful with a gentle, serene facial expression. She has fair skin and dark hair styled in a traditional Japanese fashion, adorned with hairpins and ribbons.
+(2) Attire: Wears a beautiful and elaborate traditional Japanese kimono or a fantasy-inspired miko (shrine maiden) outfit, primarily in shades of blue, white, and pink, decorated with floral patterns (like cherry blossoms) and flowing ribbons.
+(3) Weapon: Her weapon is the 'Seimei Umbrella', a magical and ornate Japanese umbrella. It's often depicted open, with mystical symbols or patterns on its canopy. It can be shown linked to her with a ribbon or floating independently.
+(4) Aura/Effects: Her magic is represented by soft, ethereal light, often in shades of pink, light blue, or teal. Cherry blossom petals frequently materialize and float around her when she uses her abilities. The aura is graceful, mystical, and controlled.
+(5) Unique Traits: Inspired by Japanese mythology, Onmyōdō, and shrine maidens. Her movements should be dance-like and elegant. The umbrella is an extension of her will, moving gracefully with her.`,
+                "Kaja": `**Artwork Prompt: Kaja, the Nazar King**
+This prompt is for creating a high-quality, divine illustration of Kaja.
+
+(1) Physical Appearance: A humanoid celestial being with avian features. He has a muscular build, bird-like wings, and a helmet or face that resembles a bird of prey.
+(2) Attire: Wears ornate, divine armor, typically in shades of gold, white, and blue. His armor is that of a celestial guardian or king.
+(3) Weapon: Wields a powerful, electrified whip or lash.
+(4) Aura/Effects: His powers are based on lightning and divine judgment. His ultimate ability, 'Divine Judgment', has him lash out with his whip, binding a single enemy and dragging them behind him. This should be visualized with a powerful, inescapable bond of lightning connecting him to his target.
+(5) Unique Traits: A 'guardian angel' or 'celestial enforcer'. He is known for his ability to suppress and displace enemies. The key visual is his powerful lightning whip and his majestic, winged form.`,
+                "Kalea": `**Artwork Prompt: Kalea, the Spirit Caller**
+This prompt is for creating a high-quality, spiritual illustration of Kalea.
+
+(1) Physical Appearance: A young woman with a deep connection to the spirit world. Her design would likely be inspired by Filipino tribal aesthetics. She has a serene and focused expression.
+(2) Attire: Wears traditional, nature-based clothing of a shaman or spirit caller, adorned with beads, feathers, and tribal patterns.
+(3) Weapon: She might carry a ritualistic staff or dagger, but her main power comes from her ability to summon and communicate with spirits.
+(4) Aura/Effects: Her magic would be visualized as ethereal, ghostly energy, perhaps in shades of teal or spirit-blue. She could summon ancestral spirits or nature spirits to aid her, which would appear as translucent, glowing figures.
+(5) Unique Traits: A hero concept based on Filipino mythology. She embodies the 'shaman' or 'spirit medium' archetype. The illustration should emphasize her spiritual connection, showing her surrounded by friendly, powerful spirits.`,
+                "Karina": `**Artwork Prompt: Karina, the Shadow Blade**
+This prompt is for creating a high-quality, deadly illustration of Karina.
+
+(1) Physical Appearance: A beautiful and deadly dark elf assassin with pale or lavender skin, pointed ears, and glowing, intense eyes. Her expression is cold and emotionless.
+(2) Attire: Wears sleek, form-fitting dark elven leather armor that allows for maximum agility and stealth. Her color scheme is typically dark purple, black, and silver.
+(3) Weapon: Wields a pair of deadly, curved twin blades.
+(4) Aura/Effects: Her abilities are all about speed and chaining kills. After killing an enemy, her skills reset, which could be visualized as a pulse of shadowy energy. Her ultimate is a swift, untargetable dash to a target, leaving a trail of shadow. Her 'Dance of Death' involves her spinning rapidly, deflecting attacks with her blades in a whirlwind of steel and shadow.
+(5) Unique Traits: The classic 'dark elf assassin' archetype. She is the embodiment of swift, merciless death. The illustration should capture her in a blur of motion, blades flashing, ready to strike from the shadows.`,
+                "Karrie": `**Artwork Prompt: Karrie, the Lost Star**
+This prompt is for creating a high-quality, agile illustration of Karrie.
+
+(1) Physical Appearance: A member of the Yasson race, appearing as a winged, humanoid creature. She is agile and has a focused, determined expression.
+(2) Attire: Wears light, practical armor that allows for high-speed movement. Her design is often futuristic and sleek.
+(3) Weapon: She wields a pair of large, glowing 'Lightwheels' (chakrams), which she throws with incredible speed and precision.
+(4) Aura/Effects: Her attacks are extremely fast. Her passive ability causes her Lightwheels to leave a mark, and on the fifth hit, the mark explodes, dealing a percentage of the target's health as true damage. This should be visualized as a glowing energy mark and a powerful, armor-shattering explosion.
+(5) Unique Traits: The 'anti-tank marksman' archetype. Her incredible attack speed and her true damage passive make her a tank's worst nightmare. The illustration should showcase her in a dynamic pose, with her glowing Lightwheels in mid-flight.`,
+                "Khaleed": `**Artwork Prompt: Khaleed, the Desert Scimitar**
+This prompt is for creating a high-quality, commanding illustration of Khaleed.
+
+(1) Physical Appearance: A powerful and charismatic desert prince or warrior with a commanding presence. He has a strong build and a confident, determined expression.
+(2) Attire: Wears ornate, Arabian-inspired desert armor and robes, suitable for both royalty and combat. His attire is often in shades of sand, gold, and turquoise.
+(3) Weapon: Wields a large, curved scimitar with deadly proficiency.
+(4) Aura/Effects: His power comes from the desert sand itself. He can 'surf' on a wave of sand, summon a 'Quicksand Guard' to protect himself, and his ultimate creates a massive 'Raging Sandstorm' that he rides into battle. The sand effects should be powerful, swirling, and visually impressive.
+(5) Unique Traits: The 'desert warrior' or 'sand mage' archetype. His complete mastery over sand is his defining feature. The illustration should depict him commanding a powerful sandstorm, showcasing his power as the prince of the desert.`,
+                "Khufra": `**Artwork Prompt: Khufra, the Desert Tyrant**
+This prompt is for creating a high-quality, imposing illustration of Khufra.
+
+(1) Physical Appearance: A tall, ancient, and cursed ruler brought back to life. His body is partially mummified, wrapped in magical bandages. He has a cruel, tyrannical expression and glowing eyes.
+(2) Attire: Wears the tattered but still regal finery of an ancient desert king, adorned with gold and jewels.
+(3) Weapon: He uses his magical, enchanted bandages as his primary weapon, stretching them to attack or pull himself around.
+(4) Aura/Effects: His abilities are all based on control and bouncing. His most iconic skill has him transform into a magical, bouncing ball of bandages, repeatedly knocking up enemies he hits. This should be a bizarre but powerful visual. His ultimate pulls all enemies in an area towards him, visualized by his bandages wrapping around them.
+(5) Unique Traits: The 'cursed pharaoh' or 'mummy king' archetype. His strange, bouncing-ball form of attack is his most memorable feature. The illustration should capture his ancient, terrifying power and his unique, bandage-based abilities.`,
+                "Kimmy": `**Artwork Prompt: Kimmy, the Splat Queen**
+This prompt is for creating a high-quality, energetic illustration of Kimmy.
+
+(1) Physical Appearance: A young, rebellious, and inventive girl with a punk-rock aesthetic. She has a confident and slightly chaotic energy.
+(2) Attire: Wears a steampunk or punk-inspired outfit, complete with goggles, a custom jetpack, and practical, chemical-stained clothing.
+(3) Weapon: Her weapon is a large, custom-built chemical coalescer (spray gun). It's connected via hoses to her jetpack, which doubles as her energy source.
+(4) Aura/Effects: Her unique feature is her ability to aim and shoot in one direction while moving in another. Her chemical spray should be visualized as a constant stream of glowing, colorful energy blobs. Her ultimate is a long-range chemical glob that explodes with a massive splash.
+(5) Unique Traits: The 'jetpack gunner' archetype. Her unique control scheme and constant movement are her defining features. The illustration should capture her in mid-air, spraying a torrent of chemical energy with a rebellious grin.`,
+                "Lancelot": `**Artwork Prompt: Lancelot, the Perfumed Knight**
+This prompt is for creating a high-quality, elegant illustration of Lancelot.
+
+(1) Physical Appearance: A handsome, noble fencer with a confident, almost arrogant, smirk. He is the brother of Guinevere and the lover of Odette.
+(2) Attire: Wears an ornate, fashionable, and slightly flamboyant knight's attire, often in shades of blue and gold. His clothing is designed to look good while allowing for incredible agility.
+(3) Weapon: Wields a light and elegant fencing rapier.
+(4) Aura/Effects: His abilities are a display of masterful fencing. His signature 'Puncture' is a swift dash that leaves a sword mark on the enemy. His 'Thorned Rose' is a triangular formation of sword strikes. He can become invincible and untargetable during his dashes, which should be visualized as a quick, shimmering blur.
+(5) Unique Traits: The 'fencing master' or 'duelist' archetype. His incredible agility and the grace of his movements are his key features. The illustration should capture him in a poised, elegant, mid-dash fencing pose.`,
+                "Lapu-Lapu": `**Artwork Prompt: Lapu-Lapu, the Courageous Blade**
+This prompt is for creating a high-quality, powerful illustration of Lapu-Lapu.
+
+(1) Physical Appearance: A powerful and courageous tribal chieftain with an unbreakable will. His design is based on the historical Filipino hero.
+(2) Attire: Wears the traditional armor and attire of a Filipino tribal warrior, often with intricate patterns and tattoos.
+(3) Weapon: He is a stance-switching hero. In his 'Twin Blade' state, he wields two heavy blades. In his 'Heavy Sword' state, he combines them into a single, massive, powerful sword.
+(4) Aura/Effects: His abilities are brutal and relentless. When he transforms into his Heavy Sword state, he should be surrounded by a powerful, earthy aura. In this state, his attacks are slow but create massive shockwaves. His ultimate is a series of three devastating heavy sword slams.
+(5) Unique Traits: Based on a national hero of the Philippines. His ability to switch between a fast, dual-wielding style and a slow, heavy-hitting style is his core mechanic. The illustration should depict him as a symbol of courage and strength.`,
+                "Layla": `**Artwork Prompt: Layla, Malefic Gunner**
+This prompt is for creating a high-quality, energetic illustration of Layla.
+
+(1) Physical Appearance: Youthful, energetic face with large, bright blue eyes full of determination. Long, vibrant blonde hair tied into two large pigtails that bounce with movement.
+(2) Attire: A futuristic, blue and white armored bodysuit with yellow accents. Wears large, high-tech goggles, sometimes pushed up onto her forehead. Outfit includes armored plates on shoulders and legs.
+(3) Weapon: Wields the massive, high-tech 'Malefic Cannon'. It features a glowing blue energy core, intricate silver and gold casing, and a long barrel that charges with power.
+(4) Aura/Effects: Brilliant cyan or light blue energy. Cannon fire should create a powerful muzzle flash and a visible energy beam. Her ultimate, 'Malefic Bomb', is a massive sphere of glowing blue energy.
+(5) Unique Traits: Inspired by classic sci-fi and mecha anime. The cannon is the central focus. Her expression is one of fierce determination.`,
+                "Leomord": `**Artwork Prompt: Leomord & Barbiel**
+This prompt is for creating a high-quality, epic illustration of Leomord and his steed, Barbiel.
+
+(1) Physical Appearance: A grim, undead knight with a commanding presence. He has a haunted, sorrowful expression. He can fight on foot or mounted on his skeletal horse, Barbiel.
+(2) Attire: Wears dark, imposing plate armor of a death knight. The armor is adorned with skulls and other deathly motifs. He wears a tattered, flowing cape.
+(3) Weapon: Wields a massive, two-handed greatsword known as 'The Oath Keeper'.
+(4) Aura/Effects: His powers are a mix of necromantic and phantom energy, in shades of spectral blue or green. His ultimate is a grand spectacle where he summons his undead steed, Barbiel, which charges onto the battlefield from the underworld. While mounted, his attacks become wide, sweeping phantom slashes.
+(5) Unique Traits: The classic 'death knight' on his undead steed. The illustration should capture the epic moment he summons Barbiel, or show him mounted, charging into battle as an unstoppable force.`,
+                "Lesley": `**Artwork Prompt: Lesley, the Deadly Sniper**
+This prompt is for creating a high-quality, focused illustration of Lesley.
+
+(1) Physical Appearance: A tall, elegant woman with a sharp, focused gaze. She has long hair and often wears an eyepatch, which likely conceals a cybernetic eye used for targeting. She is the older sister of Harley.
+(2) Attire: Wears a stylish but practical outfit that combines elements of a noblewoman's attire with a sniper's gear. Often includes a long coat or cape.
+(3) Weapon: Her signature weapon is a massive, high-tech sniper rifle. The rifle is long, powerful, and ornate.
+(4) Aura/Effects: Her abilities are based on stealth and precision. She can enter a camouflaged state, becoming semi-transparent. Her ultimate, 'Ultimate Snipe', has her lock onto a target from a huge distance, firing four fatal shots. This should be visualized with a clear targeting reticle and powerful, piercing energy bullets.
+(5) Unique Traits: The 'elegant sniper' archetype. Her calm, focused demeanor and her powerful, long-range rifle are her defining features. The illustration should show her in a classic sniper's pose, aiming down her sights with deadly precision.`,
+                "Ling": `**Artwork Prompt: Ling, the Cyan Finch**
+This prompt is for creating a high-quality, graceful illustration of Ling.
+
+(1) Physical Appearance: A handsome, elegant young man with a graceful and poetic demeanor. He has the agility and poise of a bird.
+(2) Attire: Wears the beautiful, flowing robes of an ancient swordsman or scholar, often in shades of cyan, white, and gold. His clothing is light and allows for incredible acrobatic movement.
+(3) Weapon: Wields a light and elegant longsword, named the 'Cyan Finch Blade'.
+(4) Aura/Effects: His abilities are all about unparalleled mobility. He can leap onto walls and jump between them, a skill unique to him. This should be visualized with him running gracefully along a vertical surface. His ultimate has him become invincible, creating a storm of swords around him. The effects are light, airy, and swift, like the finch he is named after.
+(5) Unique Traits: The 'sword-dancer' or 'wuxia hero' archetype. His ability to traverse terrain by leaping on walls is his most iconic feature. The illustration must capture his weightless, bird-like agility.`,
+                "Lolita": `**Artwork Prompt: Lolita, the Steel Elf**
+This prompt is for creating a high-quality, steadfast illustration of Lolita.
+
+(1) Physical Appearance: A small, elf-like girl with a determined and protective nature. Despite her small stature, she is incredibly tough.
+(2) Attire: Wears a suit of heavy-duty mechanical armor that she likely built herself. The armor is bulky but has a cute, charming design.
+(3) Weapon: She wields a massive, high-tech hammer that is several times her size. She also carries a large, energy-based shield.
+(4) Aura/Effects: Her abilities are all defensive. She can dash to allies to shield them. Her most iconic ability is her 'Guardian's Bulwark', where she raises her shield to block all incoming projectiles, which should be visualized as a large, impenetrable energy barrier. Her ultimate is a massive, ground-shattering hammer slam.
+(5) Unique Traits: The 'tiny tank' archetype. The contrast between her small, cute appearance and her massive hammer, shield, and unwavering resolve is her key feature. The illustration should show her bravely defending her allies with her giant shield.`,
+                "Luo Yi": `**Artwork Prompt: Luo Yi, the Duality Geomancer**
+This prompt is for creating a high-quality, balanced illustration of Luo Yi.
+
+(1) Physical Appearance: A beautiful and powerful mage with a confident and knowing expression. She embodies the principles of Yin and Yang.
+(2) Attire: Wears elegant, traditional Chinese-style robes, with a color scheme and design that is split between black (Yin) and white (Yang).
+(3) Weapon: She uses no weapon, casting her duality magic from her hands.
+(4) Aura/Effects: Her magic is a clear visual representation of Yin (dark, purple/black) and Yang (light, gold/yellow). Her skills mark enemies with opposing sigils. When two marked enemies are brought together, it should create a powerful stun effect, visualized as a swirling vortex of black and white energy. Her ultimate creates a large teleportation circle on the ground.
+(5) Unique Traits: The 'Yin-Yang mage'. The visual contrast and interaction between her two opposing forces is her defining feature. The illustration should show her manipulating both light and dark energies in perfect harmony.`,
+                "Lunox": `**Artwork Prompt: Lunox, the Twilight Goddess**
+This prompt is for creating a high-quality, balanced illustration of Lunox.
+
+(1) Physical Appearance: A beautiful girl who embodies the balance between Order and Chaos. She has a unique design where one side of her body/hair is light (yellow/gold) and the other is dark (purple/black), representing her dual nature.
+(2) Attire: Wears a mystical gown that is also split between light and dark aesthetics. One side is flowing and angelic, the other is sharper and more chaotic.
+(3) Weapon: She uses no weapon, casting magic from her hands.
+(4) Aura/Effects: Her magic is a constant interplay between Order (light/yellow) and Chaos (dark/purple). Her light-side attacks are golden beams of light, while her dark-side attacks are spheres of chaotic energy. Her ultimates allow her to become either a pure, invulnerable ball of light or a chaotic force that deals continuous damage. The illustration must showcase this powerful duality.
+(5) Unique Traits: The embodiment of 'balance' or 'yin and yang'. The visual split between her light and dark sides is her most defining feature and must be the central focus of any artwork.`,
+                "Lylia": `**Artwork Prompt: Lylia, the Little Witch**
+This prompt is for creating a high-quality, mischievous illustration of Lylia.
+
+(1) Physical Appearance: A small, playful, and slightly chaotic young witch from the Magic Academy. She has a mischievous grin and is always getting into trouble.
+(2) Attire: Wears a dark, witch-like outfit, but with a cute and playful twist. Her color scheme is often dark purple and black. She is accompanied by her companion, Gloom, a creature made of living shadow that often takes the form of a small monster in a cauldron or a hat.
+(3) Weapon: She doesn't wield a weapon. Her magic is channeled through her shadow creature, Gloom.
+(4) Aura/Effects: Her magic is a mix of shadow and explosive arcane energy. She can place 'Shadow Energy' bombs on the ground that can be detonated by her other skills. Her ultimate, 'Black Shoes', allows her to instantly teleport back in time to where she was a few seconds ago, which should have a fun, rewinding visual effect.
+(5) Unique Traits: The 'prankster witch' archetype. Her theme is about setting up chaotic chain reactions with her bombs. The illustration should capture her playful, trouble-making personality.`,
+                "Martis": `**Artwork Prompt: Martis, the Ashura King**
+This prompt is for creating a high-quality, ferocious illustration of Martis.
+
+(1) Physical Appearance: A powerful and demonic warrior king with a towering physique and an expression of pure battle-lust. He is the embodiment of a war god.
+(2) Attire: Wears the armor of the Ashura clan, which is ornate, demonic, and covered in spikes. The armor often has a red and black color scheme.
+(3) Weapon: Wields a pair of massive, demonic twin blades, known as the 'Ashura's Teeth'.
+(4) Aura/Effects: His abilities are a non-stop flurry of brutal attacks. His 'Mortal Coil' has him lash out with his blades, pulling enemies together. His ultimate, 'Decimation', is a powerful dash that can be reset upon killing an enemy. This should be visualized with a surge of demonic, fiery energy every time he gets a kill, showing him becoming faster and more powerful.
+(5) Unique Traits: The 'demonic warrior' or 'god of war' archetype. He is designed to be an unstoppable killing machine. The illustration should depict him as a terrifying, overwhelming force of destruction on the battlefield.`,
+                "Masha": `**Artwork Prompt: Masha, the Wild-oath**
+This prompt is for creating a high-quality, ferocious illustration of Masha.
+
+(1) Physical Appearance: A powerful, wild woman with immense physical strength and a connection to bear spirits. She is muscular and has a fierce, untamed look.
+(2) Attire: Wears tribal clothing and armor made from furs, leather, and bones, fitting for a northern warrior.
+(3) Weapon: She fights with her bare fists, which are encased in massive, bear-claw-like gauntlets.
+(4) Aura/Effects: Her unique feature is her three health bars. Her power grows as her health gets lower. Her body should be surrounded by a primal, greenish-blue energy. She can disarm opponents and charge forward with unstoppable force, like a charging bear.
+(5) Unique Traits: The 'berserker' or 'bear warrior' archetype. Her resilience (three HP bars) and her raw, untamed power are her defining features. The illustration should capture her in a savage, powerful pose, ready to tear her enemies apart.`,
+                "Mathilda": `**Artwork Prompt: Mathilda, the Swift Plume**
+This prompt is for creating a high-quality, spiritual illustration of Mathilda.
+
+(1) Physical Appearance: A young tribal woman with a deep spiritual connection to her ancestors and the wind. She has a hopeful and determined expression.
+(2) Attire: Wears the traditional clothing of her tribe, adorned with feathers, beads, and ancestral patterns. Her attire is light and allows her to move freely with the wind.
+(3) Weapon: She wields a mystical staff or scepter.
+(4) Aura/Effects: Her power comes from ancestral spirits and the wind, visualized as a shimmering, ethereal teal or green energy. She can gain 'wisps' which orbit her and can be fired at enemies. Her ultimate allows her to fly freely around a target, creating a vortex of spirits, and then dash to them. This should be a beautiful, swirling display of spiritual power.
+(5) Unique Traits: A 'tribal shaman' with the power of flight. Her theme is about guidance and spiritual connection. The illustration should capture her graceful, wind-borne movement and the ethereal beauty of her ancestral magic.`,
+                "Melissa": `**Artwork Prompt: Melissa, the Cursed Needle**
+This prompt is for creating a high-quality, protective illustration of Melissa.
+
+(1) Physical Appearance: A young woman with a rebellious and somewhat punk-rock aesthetic. She has a determined, and perhaps slightly sad, expression due to her curse.
+(2) Attire: Wears a stylish, modern outfit that looks like a mix between a tailor's apprentice and a punk. Her clothes are adorned with needles, threads, and stitched patterns.
+(3) Weapon: Her weapons are her enchanted needles and her cursed doll companion, which she calls 'Muddles'. She can throw Muddles and link enemies to it with magical thread.
+(4) Aura/Effects: Her abilities are based on her cursed needlework. She can create a protective barrier of needles and thread around her, which should be visualized as a shimmering, circular shield that damages and pushes enemies away. She can also link enemies to her doll, Muddles, with a visible, glowing thread.
+(5) Unique Traits: The 'cursed seamstress' or 'voodoo doll user' archetype. The key visual is her connection to her dolls and her ability to control the battlefield with her protective needle barrier.`,
+                "Minsitthar": `**Artwork Prompt: Minsitthar, the Courageous Warrior**
+This prompt is for creating a high-quality, regal illustration of Minsitthar.
+
+(1) Physical Appearance: A noble and powerful prince or general from a kingdom inspired by Southeast Asian culture (specifically Myanmar). He has a brave and commanding presence.
+(2) Attire: Wears ornate, golden royal armor, fitting for a warrior prince. His armor is adorned with intricate patterns and he carries a royal banner.
+(3) Weapon: Wields a golden spear and a holy shield.
+(4) Aura/Effects: His abilities are about control and divine judgment. He can hook enemies with his spear. His ultimate, 'King's Calling', has him summon four royal guards in a square formation around him. This area should be visualized with a golden, ethereal glow, and the four phantom guards should be clearly visible, attacking anyone inside.
+(5) Unique Traits: A 'warrior prince' inspired by Burmese history. His ultimate ability to create an inescapable arena with his phantom guards is his most iconic skill. The illustration should showcase this royal, commanding power.`,
+                "Minotaur": `**Artwork Prompt: Minotaur, the Son of Minos**
+This prompt is for creating a high-quality, enraged illustration of Minotaur.
+
+(1) Physical Appearance: A massive, powerful minotaur with a hulking, muscular body and the head of a bull. His design is inspired by Greek mythology.
+(2) Attire: Wears minimal armor, like a gladiator's harness and loincloth, to show off his powerful physique. He might have broken chains on his wrists.
+(3) Weapon: Wields a massive, sacred hammer.
+(4) Aura/Effects: His power is based on his 'Rage' mechanic. As he builds rage, his body should begin to glow with a red, fiery aura. When his rage is full, he enters a 'Rage State', becoming larger and more powerful. His ultimate is a series of three ground-shattering hammer blows that create massive shockwaves and knock enemies into the air.
+(5) Unique Traits: The classic 'minotaur warrior' from mythology. The key visual is his transformation into his Rage State, where he becomes an unstoppable force of nature.`,
+                "Miya": `**Artwork Prompt: Miya, the Moonlight Archer**
+This prompt is for creating a high-quality, graceful illustration of Miya.
+
+(1) Physical Appearance: A beautiful elven archer with long, flowing silver or white hair, pointed ears, and serene yet focused blue or purple eyes.
+(2) Attire: Wears light, elegant elven armor, often in shades of blue, white, and silver. Her attire is practical for an archer, allowing freedom of movement, and is adorned with moon and star motifs.
+(3) Weapon: A beautifully crafted longbow, often glowing with moonlight or magical energy. Her arrows are also magical, leaving trails of starlight.
+(4) Aura/Effects: Her magic is tied to the moon, manifesting as silvery-blue light. Her ultimate ability makes her invisible, represented by a shimmering, translucent effect, and summons a rain of glowing arrows.
+(5) Unique Traits: Embodies the 'Moon Elf' archetype. Her connection to the moon should be evident in the visuals. Her poses are always graceful and poised, even in combat.`,
+                "Moskov": `**Artwork Prompt: Moskov, the Spear of Quiescence**
+This prompt is for creating a high-quality, piercing illustration of Moskov.
+
+(1) Physical Appearance: A warrior consumed by vengeance and infused with abyssal power. He has a grim, determined expression and glowing, intense eyes.
+(2) Attire: Wears dark, tribal-like armor that seems to be fused with his body. His look is savage and menacing.
+(3) Weapon: Wields a long, cursed spear.
+(4) Aura/Effects: His abilities are based on teleportation and piercing attacks. His basic attacks pierce through enemies, which should be visualized. His signature skill is a short-range teleport, which should be a quick, shadowy blur effect. His ultimate is the 'Spear of Destruction', where he hurls a massive, map-crossing spear of pure energy.
+(5) Unique Traits: A 'vengeful warrior' with teleportation powers. His ability to pierce through multiple enemies with his attacks and his teleporting dashes make for a very aggressive and swift visual style.`,
+                "Nana": `**Artwork Prompt: Nana, the Sweet Leonin**
+This prompt is for creating a high-quality, whimsical illustration of Nana.
+
+(1) Physical Appearance: A small, cat-like Leonin child with large, expressive eyes, feline ears, and a fluffy tail. Her expression is usually playful and mischievous.
+(2) Attire: Wears a cute, brightly colored outfit, often a frilly dress or magical costume, with a large witch's hat or a hood with cat ears.
+(3) Weapon: A large, magical boomerang that she throws with surprising force. Her companion, Molina, is a small, mischievous spirit she can summon.
+(4) Aura/Effects: Her magic is colorful and whimsical, with lots of pinks, purples, and sparkles. When she transforms an enemy with Molina, it should be a cute, puff-of-smoke effect. Her ultimate summons a large, dragon-cat spirit that stomps the ground.
+(5) Unique Traits: A 'trickster mage' archetype. Her design is all about being 'kawaii' (cute). Poses should be playful and energetic.`,
+                "Natan": `**Artwork Prompt: Natan, the Spacetime Walker**
+This prompt is for creating a high-quality, futuristic illustration of Natan.
+
+(1) Physical Appearance: A handsome and intelligent-looking man from the future. He has a calm, scholarly demeanor.
+(2) Attire: Wears a sleek, futuristic outfit that combines elements of a scientist's lab coat with advanced technology.
+(3) Weapon: He doesn't wield a traditional weapon. He summons a floating, unstable wormhole or a technological orb that fires projectiles.
+(4) Aura/Effects: His power is based on spacetime manipulation. His ultimate allows him to summon a reverse-clone of himself that mimics his movements and attacks, which should be visualized as a shimmering, temporal duplicate. His attacks involve unstable, chaotic energy.
+(5) Unique Traits: The 'time-traveling scientist' archetype. The key visual is his interaction with his reverse-clone and his command over unstable, powerful temporal energy.`,
+                "Natalia": `**Artwork Prompt: Natalia, the Bright Claw**
+This prompt is for creating a high-quality, stealthy illustration of Natalia.
+
+(1) Physical Appearance: A deadly and beautiful assassin trained by the church. She has a cold, professional expression.
+(2) Attire: Wears a form-fitting assassin's outfit that is often associated with the Monastery of Light, blending reds, whites, and blacks. Her outfit allows for silent movement.
+(3) Weapon: Wields a pair of deadly claws or katars.
+(4) Aura/Effects: Her defining ability is her stealth. When in a bush, she can become completely invisible, which should be visualized by her fading away into nothingness. When she attacks from stealth, she should appear in a burst of shadow and light. Her attacks are a flurry of swift, deadly claw strikes.
+(5) Unique Traits: The 'stealth assassin' archetype. Her ability to become invisible and silence her enemies is her trademark. The illustration should evoke a sense of unseen danger, perhaps showing her just as she is about to strike from the shadows.`,
+                "Nolan": `**Artwork Prompt: Nolan, the Cosmic Wayfinder**
+This prompt is for creating a high-quality, fast-paced illustration of Nolan.
+
+(1) Physical Appearance: A mature and experienced cosmic researcher, likely the father of Layla. He has a determined and knowledgeable look.
+(2) Attire: Wears a practical yet advanced outfit suitable for a dimension-hopping researcher. It might have elements of his daughter Layla's futuristic style.
+(3) Weapon: He fights using the dimensional rifts he creates, using them to enhance his attacks and movement. He may wield a short blade or energy weapon.
+(4) Aura/Effects: His abilities are all about creating and exploiting dimensional gaps. He leaves behind rifts that he can use to remove debuffs or damage enemies. His movements are incredibly fast, as he dashes through these rifts, creating a blur of spatial energy.
+(5) Unique Traits: The 'dimensional rift' assassin. His gameplay is about high-speed, in-and-out attacks using his created rifts. The illustration should showcase this by depicting him mid-dash, with dimensional tears ripping through the space around him.`,
+                "Novaria": `**Artwork Prompt: Novaria, the Star Rebel**
+This prompt is for creating a high-quality, cosmic illustration of Novaria.
+
+(1) Physical Appearance: A humanoid being who was once human but has been transformed by cosmic power. The lower half of her body is a swirling sphere of astral energy, allowing her to float. She has a rebellious and determined expression.
+(2) Attire: Wears an outfit that seems to be made of solidified starlight and cosmic dust on her upper body.
+(3) Weapon: She summons and fires 'Astral Spheres' of immense power.
+(4) Aura/Effects: Her magic is pure, long-range astral power. Her second skill allows her to fire a massive, map-crossing sphere of astral energy that grows in power the further it travels. This should be a huge, spectacular projectile. Her ultimate reveals a large area and makes enemies vulnerable, which can be visualized as a shower of starlight.
+(5) Unique Traits: The 'astral artillery mage'. Her incredible range and the visual spectacle of her cosmic abilities are her defining features. The illustration should show her charging up or firing her massive astral sphere.`,
+                "Odette": `**Artwork Prompt: Odette, the Swan Princess**
+This prompt is for creating a high-quality, beautiful illustration of Odette.
+
+(1) Physical Appearance: A beautiful and graceful princess with a kind and noble heart. She is the lover of Lancelot.
+(2) Attire: Wears a stunning, elegant ball gown reminiscent of a swan, often in white and light blue, adorned with feathers.
+(3) Weapon: Wields a magical swan-themed scepter or wand, and a small, elegant sword.
+(4) Aura/Effects: Her magic is graceful and beautiful, often involving musical notes and water/swan-themed energy. Her ultimate ability has her channel a large area of damaging energy while singing, which should be visualized as a massive, beautiful circle of magical music notes and swan imagery.
+(5) Unique Traits: The classic 'swan princess' archetype. Her elegance and the breathtaking beauty of her ultimate ability are her key features. The illustration should capture her in her iconic ultimate pose, a dance of deadly grace.`,
+                "Paquito": `**Artwork Prompt: Paquito, the Heavenly Fist**
+This prompt is for creating a high-quality, powerful illustration of Paquito.
+
+(1) Physical Appearance: An incredibly skilled and powerful boxer with a determined and unyielding spirit. He has a powerful, athletic physique.
+(2) Attire: Wears boxing shorts, gloves, and boots. His attire is simple and functional, focusing on his identity as a pugilist.
+(3) Weapon: His fists are his only weapons.
+(4) Aura/Effects: His abilities are a series of powerful, lightning-fast punches and dashes. As he lands hits, he builds up stacks, and once full, his next ability is enhanced. This 'Champ Stance' should be visualized with a powerful, glowing aura around him, making his next punch look even more devastating.
+(5) Unique Traits: The 'master boxer' archetype, inspired by Manny Pacquiao. His theme is about relentless, powerful punching combinations. The illustration must be extremely dynamic, capturing the immense force and speed of his fists.`,
+                "Pharsa": `**Artwork Prompt: Pharsa & Verri**
+This prompt is for creating a high-quality, majestic illustration of Pharsa.
+
+(1) Physical Appearance: A noblewoman of the Crow people who was blinded and seeks revenge. She has a proud and sorrowful expression. She is always accompanied by her spiritual crow companion, Verri.
+(2) Attire: Wears elegant, dark, gothic-style noble robes, adorned with crow feathers.
+(3) Weapon: She uses a magical staff, but her true power is channeled through Verri.
+(4) Aura/Effects: Her most iconic ability allows her to transform into her companion crow, Verri, letting her fly over all obstacles on the map. Her ultimate, 'Feathered Air Strike', has her become immobile as she calls down a series of massive, long-range magical bombardments, which should look like a rain of shadowy, explosive energy.
+(5) Unique Traits: The 'vengeful crow witch' archetype. Her ability to fly and her devastating long-range ultimate are her defining features. The illustration should showcase her powerful bond with Verri and the destructive beauty of her magic.`,
+                "Phoveus": `**Artwork Prompt: Phoveus, the Shadow of Dread**
+This prompt is for creating a high-quality, menacing illustration of Phoveus.
+
+(1) Physical Appearance: A cursed warrior who relentlessly hunts magic users. He has a dark, intimidating presence, and his body is infused with dreadful, dark energy.
+(2) Attire: Wears dark, heavy armor that looks ancient and cursed. He may be covered in chains or other restraints.
+(3) Weapon: Wields a unique and terrifying weapon: a large, spherical, spiked flail made of a mysterious, glowing dread-metal named Astaros.
+(4) Aura/Effects: His power is an anti-magic, dreadful energy. His ultimate allows him to relentlessly teleport onto any enemy hero who uses a dash or blink skill, which should be visualized as him transforming into a shadow and instantly appearing to smash his target. This creates a terrifying, unstoppable visual.
+(5) Unique Traits: The 'anti-mobility hunter'. His design is based around punishing agile heroes. The illustration should capture his terrifying, relentless nature, perhaps showing him in mid-teleport, ready to crush his foe.`,
+                "Popol & Kupa": `**Artwork Prompt: Popol & Kupa**
+This prompt is for creating a high-quality, adventurous illustration of Popol and Kupa.
+
+(1) Physical Appearance: Popol is a young, clever, and mischievous boy from a frozen land. Kupa is his best friend and companion, a powerful and loyal frost wolf.
+(2) Attire: Popol wears warm, tribal clothing made of furs and leather, suitable for a cold environment.
+(3) Weapon: Popol wields a hunting spear. Kupa fights with its sharp teeth and claws.
+(4) Aura/Effects: Their abilities are a perfect synergy of hunter and beast. Popol can set traps, and Kupa can be sent to attack enemies. When they enter their alpha wolf form, Kupa should become larger, more ferocious, and glow with a frosty aura.
+(5) Unique Traits: The 'boy and his wolf' archetype. Their inseparable bond and teamwork are the core of their design. The illustration must show them fighting side-by-side as a perfect team.`,
+                "Rafaela": `**Artwork Prompt: Rafaela, the Archangel**
+This prompt is for creating a high-quality, divine illustration of Rafaela.
+
+(1) Physical Appearance: A beautiful and benevolent angel with a serene expression. She has large, white feathered wings and a gentle aura.
+(2) Attire: Wears flowing, angelic robes of white and gold, with light, celestial armor pieces.
+(3) Weapon: Wields a holy staff or scepter, which she uses to channel her healing and punishing light.
+(4) Aura/Effects: Her magic is pure, golden-white holy light. Her healing abilities should be visualized as a gentle, restorative glow. Her punishing abilities are beams of concentrated, righteous light.
+(5) Unique Traits: The archetypal 'healer angel'. She embodies grace, mercy, and divine intervention. The illustration should showcase her as a beacon of hope and light.`,
+                "Roger": `**Artwork Prompt: Roger, the Dire Wolf Hunter**
+This prompt is for creating a high-quality, transformative illustration of Roger.
+
+(1) Physical Appearance: He has two forms. As a human, he is a rugged, grizzled hunter with a determined expression. As a werewolf, he is a large, ferocious, and savage beast.
+(2) Attire: In human form, he wears a hunter's garb, including a long coat and sturdy boots. In wolf form, his clothes are tattered and torn by the transformation.
+(3) Weapon: In human form, he wields two firearms: a large rifle for long-range shots and a net-gun for slowing enemies. In wolf form, his weapons are his razor-sharp claws.
+(4) Aura/Effects: The transformation between forms should be a dramatic, savage event. As a wolf, he should have a bloodthirsty red aura. His movements become bestial and incredibly fast, lunging at his prey.
+(5) Unique Traits: The classic 'werewolf' archetype. His ability to switch between a ranged human marksman and a melee wolf assassin is his core identity. The illustration should capture the duality of his nature, perhaps showing him mid-transformation.`,
+                "Ruby": `**Artwork Prompt: Ruby, the Little Red Hood**
+This prompt is for creating a high-quality, deceptive illustration of Ruby.
+
+(1) Physical Appearance: A young girl with an innocent appearance, reminiscent of the Little Red Riding Hood fairytale. However, her eyes hint at a darker, more dangerous side.
+(2) Attire: Wears a frilly dress and her iconic red, hooded cloak.
+(3) Weapon: She wields a massive, heavy scythe that is completely at odds with her small, innocent appearance.
+(4) Aura/Effects: Her abilities are all based on controlling enemies with her scythe. She can spin her scythe around her, pulling enemies in, or use its hook to yoink a large group of enemies towards her. Her movements have a unique lifesteal effect, which can be visualized as faint red wisps flowing from the enemies to her with each skill use.
+(5) Unique Traits: The 'dark fairytale' archetype. The stark contrast between her cute 'Red Riding Hood' look and her brutal, oversized scythe is her defining feature. The illustration should highlight this deceptive duality.`,
+                "Saber": `**Artwork Prompt: Saber, the Spacetime Swordsman**
+This prompt is for creating a high-quality, precise illustration of Saber.
+
+(1) Physical Appearance: A stoic and serious cyborg or android with sharp features, glowing red or blue cybernetic eyes, and short, dark hair.
+(2) Attire: A sleek, high-tech, form-fitting armored suit, typically in metallic shades of gray, black, and blue. The suit has glowing lines of energy running through it.
+(3) Weapon: A pair of futuristic, energy-based swords (cyber blades) that he can summon. They glow intensely and leave sharp light trails when swung.
+(4) Aura/Effects: His abilities are characterized by swift, precise movements and blue or white energy slashes. His ultimate involves him dashing through an enemy, creating a flurry of glowing sword strikes that lift the enemy into the air.
+(5) Unique Traits: The quintessential 'cybernetic ninja' or 'spacetime swordsman'. Emphasize his speed and precision. The background could have a futuristic or digital feel.`,
+                "Selena": `**Artwork Prompt: Selena, the Abyssal Witch**
+This prompt is for creating a high-quality, dual-natured illustration of Selena.
+
+(1) Physical Appearance: A cursed dark elf who can switch between two forms. Her 'Elven Form' is beautiful and seemingly innocent, often with a playful look. Her 'Abyssal Form' is demonic and monstrous, with claws and a savage expression.
+(2) Attire: In her Elven Form, she wears a cute, frilly outfit. In her Abyssal Form, her clothing becomes more tattered and she is surrounded by abyssal energy.
+(3) Weapon: In Elven Form, she uses a magical wand or scepter. In Abyssal Form, she attacks with her demonic claws.
+(4) Aura/Effects: Her most iconic ability is her 'Abyssal Arrow', a long-range projectile that stuns for a long duration. This should be visualized as a shadowy, tadpole-like creature flying across the map. Her transformation between forms should be a dramatic burst of abyssal energy.
+(5) Unique Traits: A 'stance-switching' hero. Her duality is everything. The best illustrations often show both her forms, or capture the moment of her transformation, highlighting the terrifying power hidden beneath her cute exterior.`,
+                "Silvanna": `**Artwork Prompt: Silvanna, the Imperial Knightess**
+This prompt is for creating a high-quality, righteous illustration of Silvanna.
+
+(1) Physical Appearance: A beautiful and noble princess and knightess of the Moniyan Empire. She has a brave, determined expression and a regal bearing. She is the sister of Dyrroth.
+(2) Attire: Wears magnificent, ornate plate armor, befitting her royal and knightly status. The armor is typically white, gold, and blue, adorned with the crest of the empire.
+(3) Weapon: Wields a tall, elegant lance.
+(4) Aura/Effects: Her power comes from holy light. Her attacks are infused with a golden, radiant energy. Her ultimate, 'Imperial Justice', has her leap to a location and create a 'Circle of Light', a golden, inescapable arena of judgment where she gains immense power. This circle should be a spectacular, shining beacon of holy power.
+(5) Unique Traits: The 'holy knight' or 'warrior princess' archetype. Her unwavering faith and her ability to create a dueling arena of light are her key features. The illustration should capture her divine, righteous power.`,
+                "Sun": `**Artwork Prompt: Sun, the Monkey King**
+This prompt is for creating a high-quality, chaotic illustration of Sun.
+
+(1) Physical Appearance: A powerful and mischievous monkey-man, with simian features and a confident grin. His design is directly inspired by the legendary Sun Wukong.
+(2) Attire: Wears the armor of a warrior king, often with a golden headband (the magical fillet), and traditional Chinese-style armor.
+(3) Weapon: Wields a magical, size-changing golden staff.
+(4) Aura/Effects: His entire moveset is based on creating doppelgangers (clones) of himself. When he uses his skills, he should create identical copies of himself that fight alongside him. This should create a chaotic, confusing, and overwhelming visual on the battlefield.
+(5) Unique Traits: Based on the legendary Monkey King from 'Journey to the West'. His ability to create an army of clones is his most famous and powerful trait. The illustration must feature him and at least two of his doppelgangers, ready for a chaotic battle.`,
+                "Suyou": `**Artwork Prompt: Suyou, the Crimson Serpent**
+This prompt is for creating a high-quality, fluid illustration of Suyou.
+
+(1) Physical Appearance: A young martial artist with a calm and focused demeanor. His movements are fluid and snake-like.
+(2) Attire: Wears traditional martial arts robes, likely in shades of crimson and black, allowing for flexibility and speed.
+(3) Weapon: He may wield a rope dart or a chain whip, or fight with his bare hands in a style that mimics a serpent.
+(4) Aura/Effects: His abilities would be based on fluid, coiling movements and swift, venomous strikes. His ultimate could involve him transforming into or summoning a giant crimson serpent made of pure energy, which would strike with immense power.
+(5) Unique Traits: A hero concept. The 'snake-style kung fu' archetype. The illustration should emphasize his fluid, unpredictable movements, with serpentine energy coiling around him.`,
+                "Terizla": `**Artwork Prompt: Terizla, the Executioner**
+This prompt is for creating a high-quality, heavy illustration of Terizla.
+
+(1) Physical Appearance: A massive, powerfully built man who was once a smith, now a vengeful executioner. He moves with slow, deliberate, and unstoppable force.
+(2) Attire: Wears heavy, crude iron armor and is bound by chains, symbolizing his enslavement and suffering.
+(3) Weapon: He wields a ridiculously oversized and heavy hammer.
+(4) Aura/Effects: His attacks are incredibly slow but devastatingly powerful. Each swing of his hammer should feel like it has immense weight, cracking the ground on impact. His ultimate, 'Penalty Zone', has him smash the ground, creating a field that slows and pulls enemies towards a central point. This should be a powerful, earth-shattering visual.
+(5) Unique Traits: The 'juggernaut' archetype. His slowness is a key feature, contrasted with his immense destructive power. The illustration should convey the incredible weight and force behind every one of his movements.`,
+                "Thamuz": `**Artwork Prompt: Thamuz, the Lord of Cinder**
+This prompt is for creating a high-quality, demonic illustration of Thamuz.
+
+(1) Physical Appearance: A powerful demon lord with a body that seems to be made of molten rock and fire. He has a terrifying, monstrous face and a powerful build.
+(2) Attire: He is a creature of fire and wears no clothes, but has pieces of demonic, volcanic armor fused to his body.
+(3) Weapon: He wields a pair of large, heavy scythes that glow with intense heat. He can throw his scythes, which will return to him.
+(4) Aura/Effects: His body is constantly wreathed in flames. His ultimate ability causes him to erupt in a 'Cauterant Inferno', creating a fiery aura around him that deals continuous damage and causes his attacks to explode with lava. This should be a visually intense and destructive effect.
+(5) Unique Traits: The 'fire demon' archetype. His theme is about relentless, burning-hot pressure. The illustration should depict him as an unstoppable force of fire and destruction, with lava flowing from his body.`,
+                "Tigreal": `**Artwork Prompt: Tigreal, the Mystic Warrior**
+This prompt is for creating a high-quality, heroic illustration of Tigreal.
+
+(1) Physical Appearance: A large, powerfully built man with a chiseled jaw and a noble, determined expression. Often depicted with short, light-colored hair.
+(2) Attire: Encased in heavy, ornate plate armor befitting a knight commander of an empire. The armor is typically silver and gold with blue accents, and features a prominent lion or crest motif. He wears a long, flowing cape.
+(3) Weapon: A massive tower shield and a large, broad longsword. The shield is his primary tool, often glowing with holy light.
+(4) Aura/Effects: His powers manifest as radiant golden or holy blue light. His ultimate ability pulls enemies towards him, visualized as a powerful vortex of holy energy that sucks enemies into the center for his allies to destroy.
+(5) Unique Traits: The archetypal 'knight in shining armor' or 'paladin tank'. His stance should be unyielding and heroic, always protecting others.`,
+                "Uranus": `**Artwork Prompt: Uranus, the Aethereal Defender**
+This prompt is for creating a high-quality, radiant illustration of Uranus.
+
+(1) Physical Appearance: A being of pure, ancient energy given a humanoid form. His body is made of light and arcane technology. He floats above the ground.
+(2) Attire: He is a being of energy and wears no clothes, but his form is contained within a golden, ornate, technological shell or armor.
+(3) Weapon: He has no physical weapon. He attacks with bolts of energy and uses his body as a shield.
+(4) Aura/Effects: His power is based on regeneration and absorbing energy. As he takes damage, he should glow more intensely, with stacks of energy orbiting him. His ultimate removes all slows and grants him a massive shield and movement speed, which should be visualized as him becoming a brilliant, unstoppable being of pure, radiant energy.
+(5) Unique Traits: A 'living shield' or 'arcane golem'. His theme is about absorbing damage and turning it into power. The illustration should capture his radiant, untouchable, and constantly regenerating nature.`,
+                "Vale": `**Artwork Prompt: Vale, the Windtalker**
+This prompt is for creating a high-quality, elemental illustration of Vale.
+
+(1) Physical Appearance: A handsome and somewhat aloof young man with the power to control the wind. He is the brother of Valir.
+(2) Attire: Wears elegant, flowing robes that seem to be moved by a constant breeze, often in shades of blue, green, and white.
+(3) Weapon: He casts wind magic from his hands.
+(4) Aura/Effects: His magic is pure wind. He can fire blades of wind or create small cyclones. His unique mechanic allows him to upgrade one of his skills permanently during a match. His ultimate, 'Windstorm', summons a massive tornado that pulls enemies in. This should be a huge, powerful vortex of swirling wind and debris.
+(5) Unique Traits: The 'wind mage' or 'aeromancer' archetype. His rivalry and elemental opposition to his brother, Valir (fire), is a key theme. The illustration should showcase his absolute command over the powerful and destructive force of the wind.`,
+                "Valir": `**Artwork Prompt: Valir, the Son of Flames**
+This prompt is for creating a high-quality, fiery illustration of Valir.
+
+(1) Physical Appearance: A proud and powerful young man with the ability to control fire. He has a fiery, passionate personality and is the brother of Vale.
+(2) Attire: Wears arcane robes that seem to smolder with embers, in shades of red, orange, and gold.
+(3) Weapon: He casts fire magic from his hands.
+(4) Aura/Effects: His magic is pure, unrestrained fire. He can unleash a 'Burst Fireball' or a 'Searing Torrent' of continuous flame. His ultimate, 'Vengeance Flame', removes all debuffs and enhances all his other spells, making them more powerful. In this state, he should be wreathed in a powerful, explosive aura of fire.
+(5) Unique Traits: The 'fire mage' or 'pyromancer' archetype. His theme is about overwhelming his enemies with a constant torrent of flames. The illustration should depict him as a master of conflagration, with fire erupting all around him.`,
+                "Valentina": `**Artwork Prompt: Valentina, the Prophetess of the Night**
+This prompt is for creating a high-quality, cunning illustration of Valentina.
+
+(1) Physical Appearance: A beautiful, powerful, and ambitious noblewoman from House Paxley. She has a regal and slightly sinister look.
+(2) Attire: Wears an elegant and dark noble's gown, fitting for the matriarch of a powerful house. Her color scheme is often dark purple, black, and gold.
+(3) Weapon: She uses no weapon, casting dark and parasitic magic.
+(4) Aura/Effects: Her magic is shadowy and siphoning. Her most iconic ability is her ultimate, which allows her to copy the ultimate ability of any enemy hero. This should be visualized as her temporarily transforming her appearance to mimic her target, wreathed in a dark, shadowy aura.
+(5) Unique Traits: The 'ultimate thief' or 'doppelganger' archetype. Her ability to steal the most powerful skill from her enemies is her defining feature. The illustration should capture her cunning nature and the shadowy, transformative power of her ultimate.`,
+                "Vexana": `**Artwork Prompt: Vexana, the Shimmering Hope / Cursed Queen**
+This prompt is for creating a high-quality, dual-themed illustration of Vexana.
+
+(1) Physical Appearance: Her design was reworked. She is now a beautiful and noble queen. However, her power involves summoning an undead knight.
+(2) Attire: Wears a beautiful, shimmering royal gown. The outfit is elegant and hopeful, a stark contrast to her old necromancer design.
+(3) Weapon: She wields a magical scepter.
+(4) Aura/Effects: Her magic is a mix of light and necromancy. She can curse enemies with a phantom power. Her ultimate is her defining skill: she summons a massive, hulking, undead knight to fight for her. The knight's arrival should be a powerful, earth-shattering event, and it should tower over the battlefield.
+(5) Unique Traits: The 'undead summoner' archetype, but with a 'beautiful queen' aesthetic. The contrast between the beautiful Vexana and the terrifying, powerful Undead Knight she summons is the central theme of her design.`,
+                "Wanwan": `**Artwork Prompt: Wanwan, the Agile Tiger**
+This prompt is for creating a high-quality, energetic illustration of Wanwan.
+
+(1) Physical Appearance: A young, extremely energetic and cheerful girl with feline (tiger) features. She is incredibly agile.
+(2) Attire: Wears a light, Tang-dynasty-inspired outfit that allows for maximum mobility, adorned with tiger-stripe patterns.
+(3) Weapon: Wields a sleeve-dart-like weapon called 'Swallow's Path' and a crossbow.
+(4) Aura/Effects: Her abilities are all about extreme mobility. She can dash a short distance every time she lands an attack. Her ultimate, 'Crossbow of Tang', can only be activated after hitting all of an enemy's weaknesses. Once active, she leaps into the air, becoming untargetable, and unleashes a rapid-fire barrage of bolts. This should be a spectacular, high-speed visual.
+(5) Unique Traits: The 'hyper-mobile marksman'. Her constant jumping and dashing make her feel like a tiger pouncing around the battlefield. The illustration must capture her incredible agility and cheerful-but-deadly personality.`,
+                "X.Borg": `**Artwork Prompt: X.Borg, the Firaga Armor**
+This prompt is for creating a high-quality, explosive illustration of X.Borg.
+
+(1) Physical Appearance: A cyborg with a reckless and chaotic personality. His body is heavily modified with technology, and he pilots a powerful suit of 'Firaga Armor'.
+(2) Attire: He has two states. With his armor, he is a bulky, powerful mech. Without his armor (after it's destroyed), he is a smaller, more vulnerable cyborg. The armor itself is a key part of his look.
+(3) Weapon: His primary weapon is a powerful, built-in flamethrower.
+(4) Aura/Effects: His abilities are all about fire and explosions. He sprays a continuous torrent of fire. His ultimate, 'Last Insanity', has him charge forward and then self-destruct his Firaga Armor in a massive, fiery explosion, ejecting his core body in the process. This should be a huge, spectacular blast.
+(5) Unique Traits: The 'cyborg pyromaniac' archetype. His unique armor-break and self-destruct mechanic is his defining feature. The illustration should capture the chaotic, explosive nature of his fighting style.`,
+                "Xavier": `**Artwork Prompt: Xavier, the Defier of Light**
+This prompt is for creating a high-quality, transcendent illustration of Xavier.
+
+(1) Physical Appearance: A handsome and powerful mage who seeks to bend the nature of light and magic to his will. He has a calm, confident, and scholarly look.
+(2) Attire: Wears the grand robes of an archmage, likely in whites, blues, and golds, adorned with intricate magical patterns.
+(3) Weapon: He uses no weapon, casting powerful light-based magic.
+(4) Aura/Effects: His magic is a unique form of 'Mystic' light. He can create barriers of light. His ultimate, 'Dawning Light', is a global, map-crossing beam of pure magical energy. This should be a massive, visually stunning beam of light that transcends physical barriers. As he casts spells, he enters a 'Transcendence' state where his skills are enhanced, which should be visualized with a powerful, glowing aura.
+(5) Unique Traits: The 'archmage of light' archetype. His global ultimate is his most iconic feature. The illustration should depict him in his transcendent state, unleashing his ultimate beam of pure, overwhelming power.`,
+                "Yin": `**Artwork Prompt: Yin / Lieh**
+This prompt is for creating a high-quality, transformative illustration of Yin.
+
+(1) Physical Appearance: Yin is a young, determined martial artist. When he uses his ultimate, he is possessed by an evil deity, Lieh, and transforms into a larger, more demonic figure with four arms and a savage expression.
+(2) Attire: As Yin, he wears a simple martial artist's outfit. As Lieh, his clothing becomes tattered, and his body is covered in demonic markings.
+(3) Weapon: Fights with his bare fists as a master of martial arts.
+(4) Aura/Effects: His ultimate is his defining feature. He pulls a single enemy hero into his own personal dimension or domain for a one-on-one duel. This should be visualized by the background changing to a dark, hellish landscape. In this domain, he transforms into Lieh, gaining new, more powerful abilities. The transformation should be a dramatic burst of demonic energy.
+(5) Unique Traits: The 'possessed martial artist' or 'duelist' archetype. His ability to isolate an enemy and transform into a more powerful being is his key feature. The illustration should capture the moment of his transformation into Lieh within his dark domain.`,
+                "Yi Sun-shin": `**Artwork Prompt: Yi Sun-shin, the Paenlong General**
+This prompt is for creating a high-quality, strategic illustration of Yi Sun-shin.
+
+(1) Physical Appearance: A wise and powerful naval commander with a heroic and strategic demeanor, based on the historical Korean admiral.
+(2) Attire: Wears the ornate armor of a Joseon-era Korean general, including the iconic helmet.
+(3) Weapon: He can switch between a longbow for ranged attacks and a powerful glaive or sword for melee combat. He is also associated with his 'Turtle Ship'.
+(4) Aura/Effects: His ultimate ability, 'Mountain Shocker', is a global strike where he commands his naval fleet to fire three waves of cannon fire on all enemies, no matter where they are. This should be visualized as a rain of fiery cannonballs from the sky. He can also summon his powerful Turtle Ship at a naval base.
+(5) Unique Traits: The 'master strategist' and 'stance-switching warrior'. His ability to attack globally with his fleet is his most iconic skill. The illustration should depict him as a commanding general, with his fleet visible in the background.`,
+                "Yve": `**Artwork Prompt: Yve, the Astrowarden**
+This prompt is for creating a high-quality, cosmic illustration of Yve.
+
+(1) Physical Appearance: An ancient, powerful being from beyond the stars. Her appearance is alien and majestic, with a crystalline or energy-based body and a detached, all-knowing expression.
+(2) Attire: She is a cosmic being and her 'attire' is part of her body, a shell of cosmic energy and crystals.
+(3) Weapon: She uses no weapon, commanding cosmic energy with her mind.
+(4) Aura/Effects: Her ultimate is one of the most unique in the game. She creates a massive, 'Real World Manipulation' starfield grid on a large area of the battlefield. She then becomes immune to crowd control and can tap or slide on this grid to call down cosmic strikes. This should be a huge, visually complex, and beautiful display of cosmic power.
+(5) Unique Traits: A 'cosmic horror' or 'abstract being' mage. Her ultimate ability is her defining feature. The illustration must showcase her creating or manipulating her massive cosmic starfield, showing her immense, galaxy-spanning power.`,
+                "Yu Zhong": `**Artwork Prompt: Yu Zhong, the Black Dragon**
+This prompt is for creating a high-quality, draconic illustration of Yu Zhong.
+
+(1) Physical Appearance: A man cursed with the power of the Black Dragon. In his human form, he is handsome but menacing, with draconic features like scales on his skin and glowing eyes. He can transform into a full Black Dragon and a semi-dragon 'Dragonoid' form.
+(2) Attire: Wears ornate, oriental-style robes and armor that are being corrupted and torn by his draconic power.
+(3) Weapon: Fights with his bare hands, which transform into draconic claws, and his cursed cloak.
+(4) Aura/Effects: His power is dark, draconic energy. His ultimate transformation into the Black Dragon should be a spectacular event, with him becoming a massive, terrifying dragon that can fly over terrain. In his Dragonoid form, his abilities are enhanced, creating large, sweeping claw attacks and dragon-fire breath.
+(5) Unique Traits: The 'dragon-man' archetype. His ability to transform into a dragon is his ultimate expression of power. The illustration should depict him mid-transformation or in his powerful Dragonoid form, surrounded by the overwhelming power of the Black Dragon.`,
+                "Zhask": `**Artwork Prompt: Zhask, the King of Swarm**
+This prompt is for creating a high-quality, alien illustration of Zhask.
+
+(1) Physical Appearance: A terrifying and intelligent alien from an insectoid race. His appearance is insect-like and monstrous, with a large head, multiple eyes, and a chitinous body.
+(2) Attire: He is an alien creature and wears no clothes, but may have some bio-mechanical armor fused to his body.
+(3) Weapon: He uses his mind to channel energy and summon his 'Nightmaric Spawn'.
+(4) Aura/Effects: His power is to summon and command his brood. His primary skill summons a 'Nightmaric Spawn', a stationary, bug-like turret that automatically attacks enemies. His ultimate allows him to merge with his Spawn, greatly enhancing its power and turning it into a mobile, devastating weapon. This merge should be a grotesque but powerful transformation.
+(5) Unique Traits: The 'alien summoner' or 'zerg-like' mage. His entire kit revolves around his alien spawn. The illustration should depict him with his powerful, enhanced Nightmaric Spawn, showcasing him as the king of his alien swarm.`,
+                "Zhuxin": `**Artwork Prompt: Zhuxin, the Fluttering Grace**
+This prompt is for creating a high-quality, ethereal illustration of Zhuxin.
+
+(1) Physical Appearance: A beautiful and graceful woman with a connection to souls and butterflies. Her design is elegant and mystical.
+(2) Attire: Wears flowing, ethereal robes, possibly inspired by traditional Chinese attire, adorned with butterfly motifs.
+(3) Weapon: She wields a mystical lantern that contains captured souls, which manifest as glowing butterflies.
+(4) Aura/Effects: Her magic is based on these soul butterflies. She can unleash a swarm of glowing butterflies that attach to enemies, dealing damage over time. Her ultimate would likely be a massive, beautiful burst of soul butterflies that creates a large area of effect. The visual should be a beautiful but haunting swarm of light.
+(5) Unique Traits: A hero concept. The 'soulmancer' or 'butterfly witch'. The key visual is the beautiful, glowing swarm of butterflies she controls, which are both beautiful and deadly.`,
+                "Zilong": `**Artwork Prompt: Zilong, the Dragon Knight**
+This prompt is for creating a high-quality, heroic illustration of Zilong.
+
+(1) Physical Appearance: A handsome and heroic warrior with a determined and righteous expression. He is the adopted brother of Chang'e.
+(2) Attire: Wears ornate, dragon-themed oriental armor, often in shades of blue, silver, and gold.
+(3) Weapon: Wields a long and powerful dragon spear.
+(4) Aura/Effects: His abilities are swift and powerful. He can flip enemies over his shoulder with his spear. His ultimate, 'Supreme Warrior', has him become possessed by the spirit of the great dragon. In this state, he should be wreathed in a powerful, fiery or electrical aura, and move with incredible speed. A spectral dragon should be seen coiling around him.
+(5) Unique Traits: The quintessential 'dragon warrior' from oriental fantasy. His transformation into an unstoppable force during his ultimate is his key feature. The illustration should capture him in his powered-up state, with the spirit of the dragon empowering him.`
+            },
+            mlProductTemplates: {
+                sticker: {
+                    chibi: "A kawaii chibi sticker of [HERO] in a dynamic action pose. Clean vector lines, vibrant colors, thick white die-cut border, isolated on a white background, high resolution, sticker design.",
+                    minimalist: "A minimalist icon sticker of [HERO]'s most recognizable feature (e.g., weapon, helmet). Bold, simple lines, limited color palette, high contrast, die-cut shape, isolated on white background.",
+                    pixel_art: "A 16-bit pixel art sticker of [HERO]. Crisp pixels, vibrant retro color palette, perfect for a sticker sheet, die-cut border, isolated on a white background.",
+                    pop_art: "A pop art style sticker of [HERO]'s face. Bold outlines, Ben-Day dots, vibrant, saturated colors, comic book aesthetic, die-cut shape, isolated on white background.",
+                    watercolor_splash: "A beautiful watercolor splash art sticker featuring [HERO]. Soft, bleeding colors with delicate ink outlines, artistic and expressive, transparent die-cut border, isolated on white background.",
+                    graffiti: "A graffiti street art style sticker of [HERO]'s name with them posing next to it. Urban, edgy, vibrant spray paint textures, dynamic lettering, die-cut shape."
+                },
+                tshirt: {
+                    vintage_poster: "A vintage retro band tour style T-shirt design featuring [HERO]. Distressed textures, muted color palette, bold typography with the hero's name and title. Looks like a classic 80s concert tee. Front print design.",
+                    minimalist_silhouette: "A minimalist T-shirt design with a stylized silhouette of [HERO] in an iconic pose. Single color print (e.g., white on a black shirt), clean and modern design, suitable for chest print.",
+                    japanese_ukiyo: "A Japanese ukiyo-e woodblock print style T-shirt design of [HERO]. Traditional line work, flat colors, and patterns, depicting the hero in a legendary scene. Full back print design.",
+                    sports_jersey: "A modern esports jersey T-shirt design for [HERO]. Dynamic lines, team logo style emblem, hero's name and a number on the back. Bold, futuristic typography. High-tech and athletic feel.",
+                    animated_scene: "A vibrant, full-color anime scene T-shirt design featuring [HERO] in the middle of their ultimate ability. Dynamic action lines, bright energy effects, high-energy composition. Large front graphic.",
+                    pocket_chibi: "A simple T-shirt design with a small, cute chibi version of [HERO] peeking out of a fake chest pocket. Minimalist and playful design, perfect for a subtle fan shirt."
+                }
+            }
+        };
+
+        // --- DOM ELEMENTS ---
+        const generateBtn = document.getElementById('generate-btn');
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        const promptOutput = document.getElementById('prompt-output');
+        const copyBtn = document.getElementById('copy-btn');
+        const mlHeroesInputs = document.getElementById('ml-heroes-inputs');
+        const mlHeroSelect = document.getElementById('ml-hero-select');
+        const mlProductDesignInputs = document.getElementById('ml-product-design-inputs');
+        const productTypeRadios = document.querySelectorAll('input[name="product-type"]');
+        const mlDesignTemplateSelect = document.getElementById('ml-design-template-select');
+        
+
+        let lastSubject = '';
+
+        // --- FUNCTIONS ---
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generatePrompt() {
+            let fullPrompt = '';
+
+            const selectedHero = mlHeroSelect.value;
+            const productType = document.querySelector('input[name="product-type"]:checked').value;
+            const designTemplateKey = mlDesignTemplateSelect.value;
+
+            const heroDescription = prompts.mobileLegendsHeroes[selectedHero] || `Description for ${selectedHero} is not available.`;
+            const designPromptTemplate = prompts.mlProductTemplates[productType][designTemplateKey] || `A design of [HERO].`;
+            
+            const finalDesignPrompt = designPromptTemplate.replace(/\[HERO\]/g, selectedHero);
+
+            fullPrompt = `${finalDesignPrompt}\n\n**REFERENCE DETAILS:**\n${heroDescription}`;
+
+            promptOutput.textContent = fullPrompt;
+        }
+
+        function shuffleElements() {
+            const options = mlHeroSelect.options;
+            mlHeroSelect.selectedIndex = Math.floor(Math.random() * options.length);
+            
+            const designOptions = mlDesignTemplateSelect.options;
+            if (designOptions.length > 0) {
+                mlDesignTemplateSelect.selectedIndex = Math.floor(Math.random() * designOptions.length);
+            }
+            generatePrompt();
+        }
+
+
+        function copyPrompt() {
+            const textToCopy = promptOutput.textContent;
+            const textArea = document.createElement('textarea');
+            textArea.value = textToCopy;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) showCopyFeedback();
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            document.body.removeChild(textArea);
+        }
+        
+        function showCopyFeedback() {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            copyBtn.classList.add('bg-green-500');
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.classList.remove('bg-green-500');
+            }, 2000);
+        }
+        
+        function populateMLHeroes() {
+            const heroList = ["Aamon", "Akai", "Aldous", "Alice", "Alpha", "Alucard", "Angela", "Argus", "Arlott", "Atlas", "Aurora", "Aulus", "Badang", "Balmond", "Bane", "Barats", "Baxia", "Beatrix", "Belerick", "Benedetta", "Brody", "Bruno", "Carmilla", "Cecilion", "Chang’e", "Chip", "Chou", "Cici", "Claude", "Clint", "Cyclops", "Diggie", "Dyrroth", "Edith", "Esmeralda", "Estes", "Eudora", "Fanny", "Faramis", "Floryn", "Franco", "Fredrinn", "Freya", "Gatotkaca", "Gloo", "Gord", "Granger", "Grock", "Guinevere", "Gusion", "Hanabi", "Hanzo", "Harith", "Harley", "Hayabusa", "Helcurt", "Hilda", "Hylos", "Irithel", "Ixia", "Jawhead", "Johnson", "Joy", "Julian", "Kadita", "Kagura", "Kaja", "Karina", "Karrie", "Khaleed", "Khufra", "Kimmy", "Lancelot", "Lapu-Lapu", "Layla", "Leomord", "Lesley", "Ling", "Lolita", "Luo Yi", "Lunox", "Lylia", "Martis", "Masha", "Mathilda", "Melissa", "Minsitthar", "Minotaur", "Miya", "Moskov", "Nana", "Natan", "Natalia", "Nolan", "Novaria", "Odette", "Paquito", "Pharsa", "Phoveus", "Popol & Kupa", "Rafaela", "Roger", "Ruby", "Saber", "Selena", "Silvanna", "Sun", "Terizla", "Thamuz", "Tigreal", "Uranus", "Vale", "Valir", "Valentina", "Vexana", "Wanwan", "X.Borg", "Xavier", "Yi Sun-shin", "Yin", "Yve", "Yu Zhong", "Zhask", "Zilong"];
+            heroList.sort(); // Sort alphabetically
+            mlHeroSelect.innerHTML = ''; // Clear existing options before populating
+            heroList.forEach(hero => {
+                const option = document.createElement('option');
+                option.value = hero;
+                option.textContent = hero;
+                mlHeroSelect.appendChild(option);
+            });
+        }
+        
+        function populateDesignTemplates() {
+            const productType = document.querySelector('input[name="product-type"]:checked').value;
+            const templates = prompts.mlProductTemplates[productType];
+            mlDesignTemplateSelect.innerHTML = ''; // Clear existing options
+
+            for (const key in templates) {
+                const option = document.createElement('option');
+                option.value = key;
+                // Format the key to be more readable (e.g., 'vintage_poster' -> 'Vintage Poster')
+                option.textContent = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                mlDesignTemplateSelect.appendChild(option);
+            }
+        }
+        
+        // --- EVENT LISTENERS ---
+        generateBtn.addEventListener('click', () => {
+            generatePrompt();
+        });
+        shuffleBtn.addEventListener('click', shuffleElements);
+        copyBtn.addEventListener('click', copyPrompt);
+
+        productTypeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                populateDesignTemplates();
+                generatePrompt();
+            });
+        });
+
+        mlDesignTemplateSelect.addEventListener('change', generatePrompt);
+        mlHeroSelect.addEventListener('change', generatePrompt);
+
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            populateMLHeroes();
+            populateDesignTemplates();
+            generatePrompt();
+        });
+    </script>
+
+</body>
+</html>
+
+
+
+
+
